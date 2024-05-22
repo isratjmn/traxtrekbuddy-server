@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String               @id @default(uuid())
+  name          String
+  email         String               @unique
+  password      String
+  role          Role?                @default(user)
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  userProfile   UserProfile?
+  trips         Trip[]
+  buddyRequests TravelBuddyRequest[]
+  admin         Admin?
+
+  @@map("users")
+}
+
+model Admin {
+  id            String               @id @default(uuid())
+  name          String
+  email         String               @unique
+  password      String
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  userProfile   UserProfile?         @relation(fields: [userProfileId], references: [id])
+  buddyRequests TravelBuddyRequest[]
+  userProfileId String?
+  user          User                 @relation(fields: [email], references: [email])
+
+  @@map("admins")
+}
+
+model Trip {
+  id            String               @id @default(uuid())
+  userId        String
+  destination   String
+  description   String
+  startDate     DateTime
+  endDate       DateTime
+  travelType    String
+  photos        String?
+  itinerary     String
+  location      String
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  buddyRequests TravelBuddyRequest[]
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("trips")
+}
+
+model TravelBuddyRequest {
+  id        String            @id @default(uuid())
+  tripId    String
+  userId    String
+  status    TravelBuddyStatus @default(PENDING)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  trip      Trip              @relation(fields: [tripId], references: [id])
+  user      User              @relation(fields: [userId], references: [id])
+  Admin     Admin?            @relation(fields: [adminId], references: [id])
+  adminId   String?
+
+  @@map("travelbuddy")
+}
+
+model UserProfile {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  bio       String?
+  age       Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Admin     Admin[]
+
+  @@map("profiles")
+}
+
+enum TravelBuddyStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum Role {
+  admin
+  user
+}
