@@ -12,6 +12,7 @@ const requstValidate_1 = __importDefault(require("../../middlewares/requstValida
 const router = express_1.default.Router();
 exports.tripRoutes = router;
 exports.tripsRoutes = router;
-router.post('/', auth_1.default, (0, requstValidate_1.default)(trip_validation_1.TripsValidation.CreateTripSchema), trip_controller_1.TripControllers.createTrip);
+router.post('/', (0, auth_1.default)("user", "admin"), (0, requstValidate_1.default)(trip_validation_1.TripsValidation.CreateTripSchema), trip_controller_1.TripControllers.createTrip);
 router.get('/', trip_controller_1.TripControllers.getTrips);
-router.post('/:tripId/request', auth_1.default, trip_controller_1.TripControllers.sendRequest);
+router.get('/:id', trip_controller_1.TripControllers.getTrip);
+router.post('/:tripId/request', (0, auth_1.default)("admin"), trip_controller_1.TripControllers.sendRequest);

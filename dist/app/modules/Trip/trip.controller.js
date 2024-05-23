@@ -17,9 +17,10 @@ const http_status_1 = __importDefault(require("http-status"));
 const ConsignResponse_1 = __importDefault(require("../../../mutual/ConsignResponse"));
 const trip_service_1 = require("./trip.service");
 const asyncHandler_1 = __importDefault(require("../../../mutual/asyncHandler"));
+//* CREATE TRIP
 const createTrip = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    const id = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+    const id = (_a = req === null || req === void 0 ? void 0 : req.user) === null || _a === void 0 ? void 0 : _a.id;
     console.log(req);
     if (!id) {
         res.status(401).json({
@@ -28,15 +29,17 @@ const createTrip = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, v
         });
         return;
     }
-    const { destination, startDate, endDate, budget, activities } = req.body;
-    const trip = yield trip_service_1.TripServices.createTrip(id, destination, startDate, endDate, budget, activities);
+    const tripData = Object.assign(Object.assign({}, req.body), { userId: id });
+    console.log(tripData);
+    const newTrip = yield trip_service_1.TripServices.createTrip(tripData);
     (0, ConsignResponse_1.default)(res, {
         success: true,
         statusCode: 201,
-        message: "Trip created successfully",
-        data: trip,
+        message: "Trip created successfully...!!",
+        data: newTrip,
     });
 }));
+//* GETTING ALL THE TRIPS
 const getTrips = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const result = yield trip_service_1.TripServices.getTrips(req.query);
@@ -51,6 +54,32 @@ const getTrips = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, voi
         });
     }
 }));
+//* GET A PERTICULAR TRIP
+const getTrip = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const tripId = req.params.id;
+    if (!tripId) {
+        res.status(400).json({
+            success: false,
+            message: "Bad Request: Trip ID is required",
+        });
+        return;
+    }
+    const trip = yield trip_service_1.TripServices.getTripById(tripId);
+    if (!trip) {
+        res.status(404).json({
+            success: false,
+            message: "Trip not found...!!",
+        });
+        return;
+    }
+    (0, ConsignResponse_1.default)(res, {
+        success: true,
+        statusCode: 200,
+        message: "Trip details fetched successfully...!!",
+        data: trip,
+    });
+}));
+//* TREVEL REQUEST
 const sendRequest = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _b;
     const { tripId } = req.params;
@@ -64,5 +93,8 @@ const sendRequest = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, 
     });
 }));
 exports.TripControllers = {
-    createTrip, getTrips, sendRequest
+    createTrip,
+    getTrips,
+    getTrip,
+    sendRequest
 };

@@ -27,13 +27,14 @@ const registerUser = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0,
         data: {
             id: result.id,
             name: result.name,
-            email: result.email
+            email: result.email,
+            role: result.role
         }
     });
 }));
 const login = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name, email, password } = req.body;
-    const result = yield auth_service_1.AuthServices.loginUser({ name, email, password });
+    const { name, email, password, role } = req.body;
+    const result = yield auth_service_1.AuthServices.loginUser({ name, email, password, role });
     (0, ConsignResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
@@ -42,6 +43,7 @@ const login = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0
             id: result.id,
             name: result.name,
             email: result.email,
+            role: result.role,
             token: result.token,
         }
     });

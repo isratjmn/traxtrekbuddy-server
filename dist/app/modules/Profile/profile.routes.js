@@ -10,6 +10,6 @@ const auth_1 = __importDefault(require("../../middlewares/auth"));
 const requstValidate_1 = __importDefault(require("../../middlewares/requstValidate"));
 const profile_validation_1 = require("./profile.validation");
 const router = express_1.default.Router();
-router.get('/', auth_1.default, profile_controller_1.UserProfileControllers.getUserProfile);
-router.put('/', auth_1.default, (0, requstValidate_1.default)(profile_validation_1.UserProfileValidation.UpdateProfileSchema), profile_controller_1.UserProfileControllers.updateProfile);
+router.get('/', (0, auth_1.default)("user"), profile_controller_1.UserProfileControllers.getUserProfile);
+router.put('/', (0, auth_1.default)("user"), (0, requstValidate_1.default)(profile_validation_1.UserProfileValidation.UpdateProfileSchema), profile_controller_1.UserProfileControllers.updateProfile);
 exports.profileRoutes = router;

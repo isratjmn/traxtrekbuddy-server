@@ -24,7 +24,7 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const userData = yield prisma.user.findUniqueOrThrow({
         where: {
             email: payload.email,
-            name: payload.name
+            name: payload.name,
         },
     });
     if (!userData) {
@@ -38,11 +38,13 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         id: userData.id,
         email: userData.email,
         name: userData.name,
+        role: userData.role,
     }, config_1.default.jwt.jwt_secret, config_1.default.jwt.expires_in);
     return {
         id: userData.id,
         name: userData.name,
         email: userData.email,
+        role: userData.role,
         token,
     };
 });

@@ -17,29 +17,38 @@ const client_1 = require("@prisma/client");
 const http_status_1 = __importDefault(require("http-status"));
 const validateQueryParams_1 = __importDefault(require("../../../Utils/validateQueryParams"));
 const prisma = new client_1.PrismaClient();
-const createTrip = (userId, destination, startDate, endDate, budget, activities) => __awaiter(void 0, void 0, void 0, function* () {
+const createTrip = (tripData) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("Trip Data", tripData);
     const trip = yield prisma.trip.create({
         data: {
-            userId,
-            destination,
-            startDate: new Date(startDate).toISOString(),
-            endDate: new Date(endDate).toISOString(),
-            budget,
-            activities,
+            userId: tripData === null || tripData === void 0 ? void 0 : tripData.userId,
+            destination: tripData === null || tripData === void 0 ? void 0 : tripData.destination,
+            description: tripData === null || tripData === void 0 ? void 0 : tripData.description,
+            startDate: new Date(tripData.startDate).toISOString(),
+            endDate: new Date(tripData.endDate).toISOString(),
+            travelType: tripData === null || tripData === void 0 ? void 0 : tripData.travelType,
+            photos: (tripData === null || tripData === void 0 ? void 0 : tripData.photos) || null,
+            itinerary: tripData === null || tripData === void 0 ? void 0 : tripData.itinerary,
+            location: tripData === null || tripData === void 0 ? void 0 : tripData.location
         },
     });
     return trip;
 });
 const getTrips = (queryParams) => __awaiter(void 0, void 0, void 0, function* () {
     (0, validateQueryParams_1.default)(queryParams);
-    const { destination, startDate, endDate, budget, searchTerm, minBudget, maxBudget, page = 1, limit = 10, sortBy, sortOrder, } = queryParams;
+    const { destination, description, startDate, endDate, travelType, itinerary, location, 
+    // budget,
+    searchTerm, 
+    /* minBudget,
+    maxBudget, */
+    page = 1, limit = 10, sortBy, sortOrder, } = queryParams;
     const pageNumber = parseInt(page);
     const limitNumber = parseInt(limit);
     const where = {
         destination: destination ? { contains: destination } : undefined,
         startDate: startDate ? { gte: new Date(startDate) } : undefined,
         endDate: endDate ? { lte: new Date(endDate) } : undefined,
-        budget: budget
+        /* budget: budget
             ? {
                 gte: parseInt(budget.minBudget),
                 lte: parseInt(budget.maxBudget),
@@ -50,20 +59,21 @@ const getTrips = (queryParams) => __awaiter(void 0, void 0, void 0, function* ()
                 { destination: { contains: searchTerm } },
                 { budget: parseInt(searchTerm) },
             ]
-            : undefined,
+            : undefined, */
     };
-    if (minBudget && maxBudget) {
+    /* if (minBudget && maxBudget)
+    {
         where.budget = {
             gte: parseInt(minBudget),
             lte: parseInt(maxBudget),
         };
-    }
+    } */
     const [trips, totalCount] = yield Promise.all([
         prisma.trip.findMany({
             where,
             orderBy: sortBy ? {
                 [sortBy]: sortOrder || 'desc'
-            } : { budget: 'desc' },
+            } : { location: 'desc' },
             take: limitNumber,
             skip: (pageNumber - 1) * limitNumber,
         }),
@@ -72,7 +82,7 @@ const getTrips = (queryParams) => __awaiter(void 0, void 0, void 0, function* ()
     return {
         success: true,
         statusCode: http_status_1.default.OK,
-        message: 'Trips retrieved successfully!!',
+        message: 'Trips retrieved successfully....!!',
         meta: {
             page: pageNumber,
             limit: limitNumber,
@@ -80,6 +90,21 @@ const getTrips = (queryParams) => __awaiter(void 0, void 0, void 0, function* ()
         },
         data: trips,
     };
+});
+//* GET A PERTICULAR TRIP
+const getTripById = (tripId) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const trip = yield prisma.trip.findUnique({
+            where: {
+                id: tripId,
+            },
+        });
+        return trip;
+    }
+    catch (error) {
+        console.error('Error fetching trip details:', error);
+        throw error;
+    }
 });
 const sendTravelBuddyRequest = (tripId, userId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -97,5 +122,8 @@ const sendTravelBuddyRequest = (tripId, userId) => __awaiter(void 0, void 0, voi
     }
 });
 exports.TripServices = {
-    createTrip, getTrips, sendTravelBuddyRequest
+    createTrip,
+    getTrips,
+    getTripById,
+    sendTravelBuddyRequest
 };
