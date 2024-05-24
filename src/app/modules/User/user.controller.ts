@@ -9,7 +9,6 @@ const getAllUser = asyncHandler(
 	async (req: Request & { user?: any }, res: Response) => {
 		const user = req.user;
 		const queryParams = req.query;
-
 		const result = await userService.getAllUser(user, queryParams);
 		return res.status(httpStatus.OK).json(result);
 	}
@@ -17,9 +16,7 @@ const getAllUser = asyncHandler(
 
 const updateUserInfo = asyncHandler(async (req: Request, res: Response) => {
 	const { id } = req.params;
-
 	const result = await userService.updateUserInfo(id, req.body);
-
 	ConsignResponse(res, {
 		success: true,
 		statusCode: httpStatus.OK,
@@ -30,7 +27,6 @@ const updateUserInfo = asyncHandler(async (req: Request, res: Response) => {
 
 const updateUserRole = asyncHandler(async (req: Request, res: Response) => {
 	const { id } = req.params;
-
 	const result = await userService.updateUserRole(id, req.body);
 	ConsignResponse(res, {
 		success: true,
@@ -40,8 +36,24 @@ const updateUserRole = asyncHandler(async (req: Request, res: Response) => {
 	});
 });
 
+const getDashboardData = asyncHandler(
+	async (req: Request & { user?: any }, res: Response) => {
+		const user = req.user;
+
+		const result = await userService.getDashboardData(user);
+
+		ConsignResponse(res, {
+			success: true,
+			statusCode: httpStatus.OK,
+			message: "Dashboard data retrieved successfully!",
+			data: result,
+		});
+	}
+);
+
 export const userController = {
 	getAllUser,
 	updateUserInfo,
 	updateUserRole,
+	getDashboardData,
 };

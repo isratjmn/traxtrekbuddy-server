@@ -1,23 +1,10 @@
 import { PrismaClient } from "@prisma/client";
-import { IUserProfile } from "./profile.interface";
 const prisma = new PrismaClient();
 
-const getUserProfile = async () => {
-	const userDetails = await prisma.user.findMany({
-		select: {
-			id: true,
-			name: true,
-			email: true,
-			userProfile: true,
-		},
-	});
-	if (!userDetails) {
-		throw new Error("User profile not found....!!");
-	}
-	return userDetails;
-};
-
 const getMyProfile = async (userId: string) => {
+	const defaultProfileImage =
+		"https://res.cloudinary.com/dmr810p4l/image/upload/v1717297396/2150771125_osnw4b.jpg";
+
 	const userProfile = await prisma.user.findUnique({
 		where: { id: userId },
 		select: {
@@ -29,10 +16,10 @@ const getMyProfile = async (userId: string) => {
 				select: {
 					bio: true,
 					age: true,
+					profileImage: true,
 				},
 			},
 			trips: true,
-
 			buddyRequests: {
 				select: {
 					status: true,
@@ -46,50 +33,51 @@ const getMyProfile = async (userId: string) => {
 		},
 	});
 
-	return userProfile;
+	if (userProfile) {
+		// Ensure userProfile exists before accessing its properties
+		const modifiedUserProfile = {
+			...userProfile,
+			userProfile: {
+				...userProfile.userProfile,
+				profileImage:
+					userProfile.userProfile?.profileImage ||
+					defaultProfileImage,
+			},
+		};
+
+		return modifiedUserProfile;
+	}
+
+	return null;
 };
 
 const updateUserProfile = async (
 	userId: string,
-	data: Partial<{
-		name: string;
-		userProfile: {
-			bio: string;
-			age: number;
-		};
-	}>
+	data: Partial<{ bio: string; age: number }>
 ) => {
-	const updatedProfile = await prisma.user.update({
+	const updatedProfile = await prisma.userProfile.update({
 		where: {
-			id: userId,
+			userId: userId,
 		},
 		data: {
-			...data,
-			userProfile: {
-				update: {
-					...data.userProfile,
-				},
-			},
+			bio: data.bio,
+			age: data.age,
 		},
 		select: {
 			id: true,
-			name: true,
-			email: true,
-			userProfile: {
+			bio: true,
+			age: true,
+			user: {
 				select: {
-					bio: true,
-					age: true,
+					name: true,
 				},
 			},
-			createdAt: true,
-			updatedAt: true,
 		},
 	});
 	return updatedProfile;
 };
 
 export const UserProfileServices = {
-	getUserProfile,
 	getMyProfile,
 	updateUserProfile,
 };

@@ -227,11 +227,30 @@ const getTripById = async (tripId: string) => {
 	}
 };
 
-const sendTravelBuddyRequest = async (tripId: string, userId: string) => {
+const sendTravelBuddyRequest = async (
+	user: any,
+	tripId: string,
+	payload: string
+) => {
 	try {
-		// Check if the trip exists
+		// Check if the user has already sent two requests for the trip
+		const requestCount = await prisma.travelBuddyRequest.count({
+			where: {
+				tripId,
+				userId: user.id,
+			},
+		});
+
+		if (requestCount >= 2) {
+			throw new Error(
+				"You cannot send more than two requests for this trip."
+			);
+		}
+		// Proceed with creating the request if the limit is not reached
 		const trip = await prisma.trip.findUnique({
-			where: { id: tripId },
+			where: {
+				id: tripId,
+			},
 		});
 
 		if (!trip) {
@@ -241,7 +260,7 @@ const sendTravelBuddyRequest = async (tripId: string, userId: string) => {
 		const request = await prisma.travelBuddyRequest.create({
 			data: {
 				tripId,
-				userId,
+				userId: user.id,
 				status: "PENDING",
 			},
 		});

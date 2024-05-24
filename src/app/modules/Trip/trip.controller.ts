@@ -73,19 +73,26 @@ const getTrip = asyncHandler(async (req: Request, res: Response) => {
 });
 
 //* TREVEL REQUEST
-const sendRequest = asyncHandler(async (req: Request, res: Response) => {
-	const { tripId } = req.params;
-	const userId = req.body?.userId;
-	const response = await TripServices.sendTravelBuddyRequest(tripId, userId);
-	// Remove the adminId field from the response data
-	const { adminId, ...responseData } = response;
-	ConsignResponse(res, {
-		statusCode: httpStatus.CREATED,
-		success: true,
-		message: "Travel buddy request sent successfully....!!!",
-		data: responseData,
-	});
-});
+const sendRequest = asyncHandler(
+	async (req: Request & { user?: any }, res: Response) => {
+		const user = req.user;
+		const { tripId } = req.params;
+		// const userId = req.body?.userId;
+		const response = await TripServices.sendTravelBuddyRequest(
+			user,
+			tripId,
+			req.body
+		);
+		// Remove the adminId field from the response data
+		const { adminId, ...responseData } = response;
+		ConsignResponse(res, {
+			statusCode: httpStatus.CREATED,
+			success: true,
+			message: "Travel buddy request sent successfully....!!!",
+			data: responseData,
+		});
+	}
+);
 
 //* TREVEL DELETE
 const deleteTrip = asyncHandler(async (req: Request, res: Response) => {

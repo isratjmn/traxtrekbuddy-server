@@ -53,7 +53,7 @@ const auth = (...roles: string[]) => {
 				throw new Error("User not found or role is null..!!");
 			}
 			// Check if user has one of the required roles
-			if (!roles.length || roles.includes(user.role)) {
+			if (!roles.length || roles.includes(user?.role)) {
 				req.user = user;
 				next();
 			} else {

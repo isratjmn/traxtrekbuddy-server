@@ -75,14 +75,15 @@ model TravelBuddyRequest {
 }
 
 model UserProfile {
-  id        String   @id @default(uuid())
-  userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id])
-  bio       String?
-  age       Int?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Admin     Admin[]
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id])
+  bio          String?
+  age          Int?
+  profileImage String?  @default("https://res.cloudinary.com/dmr810p4l/image/upload/v1717297396/2150771125_osnw4b.jpg")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  Admin        Admin[]
 
   @@map("profiles")
 }

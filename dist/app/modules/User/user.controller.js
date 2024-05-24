@@ -43,8 +43,19 @@ const updateUserRole = (0, asyncHandler_1.default)((req, res) => __awaiter(void 
         data: result,
     });
 }));
+const getDashboardData = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = req.user;
+    const result = yield user_service_1.userService.getDashboardData(user);
+    (0, ConsignResponse_1.default)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: "Dashboard data retrieved successfully!",
+        data: result,
+    });
+}));
 exports.userController = {
     getAllUser,
     updateUserInfo,
     updateUserRole,
+    getDashboardData,
 };

@@ -4,16 +4,6 @@ import ConsignResponse from "../../../mutual/ConsignResponse";
 import { UserProfileServices } from "./profile.service";
 import asyncHandler from "../../../mutual/asyncHandler";
 
-const getUserProfile = asyncHandler(async (req: Request, res: Response) => {
-	const userProfile = await UserProfileServices.getUserProfile();
-	return ConsignResponse(res, {
-		statusCode: httpStatus.OK,
-		success: true,
-		message: "User profile retrieved successfully..!!",
-		data: userProfile,
-	});
-});
-
 const getMyProfile = asyncHandler(
 	async (req: Request & { user?: any }, res: Response) => {
 		const userId = req.user?.id;
@@ -29,7 +19,7 @@ const getMyProfile = asyncHandler(
 
 const updateProfile = asyncHandler(async (req: Request, res: Response) => {
 	const userId = req.user?.id;
-	const payload = req.body;
+	const { bio, age } = req.body;
 
 	if (!userId) {
 		return res.status(httpStatus.UNAUTHORIZED).json({
@@ -41,7 +31,7 @@ const updateProfile = asyncHandler(async (req: Request, res: Response) => {
 
 	const updatedProfile = await UserProfileServices.updateUserProfile(
 		userId as string,
-		payload
+		{ bio, age }
 	);
 
 	return res.status(httpStatus.OK).json({
@@ -53,7 +43,6 @@ const updateProfile = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const UserProfileControllers = {
-	getUserProfile,
 	getMyProfile,
 	updateProfile,
 };

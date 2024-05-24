@@ -5,11 +5,6 @@ import { Role } from "@prisma/client";
 
 const router = express.Router();
 
-router.get(
-	"/",
-	auth(Role.user, Role.admin),
-	UserProfileControllers.getUserProfile
-);
 
 router.get(
 	"/my-profile",

@@ -8,7 +8,7 @@ import { UserValidation } from "./user.validation";
 
 const router = express.Router();
 
-router.get("/users", auth(Role.admin, Role.admin), userController.getAllUser);
+router.get("/users", auth(Role.admin, Role.user), userController.getAllUser);
 
 router.patch(
 	"/:id/status",
@@ -22,6 +22,12 @@ router.patch(
 	auth(Role.admin),
 	// requestValidate(userValidation.userRoleUpdateValidation),
 	userController.updateUserRole
+);
+
+router.get(
+	"/dashboard-data",
+	auth(Role.admin),
+	userController.getDashboardData
 );
 
 export const userRoute = router;

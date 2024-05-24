@@ -86,10 +86,10 @@ const getTrip = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void
 }));
 //* TREVEL REQUEST
 const sendRequest = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _b;
+    const user = req.user;
     const { tripId } = req.params;
-    const userId = (_b = req.body) === null || _b === void 0 ? void 0 : _b.userId;
-    const response = yield trip_service_1.TripServices.sendTravelBuddyRequest(tripId, userId);
+    // const userId = req.body?.userId;
+    const response = yield trip_service_1.TripServices.sendTravelBuddyRequest(user, tripId, req.body);
     // Remove the adminId field from the response data
     const { adminId } = response, responseData = __rest(response, ["adminId"]);
     (0, ConsignResponse_1.default)(res, {

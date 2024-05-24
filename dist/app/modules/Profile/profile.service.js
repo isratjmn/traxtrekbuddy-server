@@ -12,21 +12,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserProfileServices = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
-const getUserProfile = () => __awaiter(void 0, void 0, void 0, function* () {
-    const userDetails = yield prisma.user.findMany({
-        select: {
-            id: true,
-            name: true,
-            email: true,
-            userProfile: true,
-        },
-    });
-    if (!userDetails) {
-        throw new Error("User profile not found....!!");
-    }
-    return userDetails;
-});
 const getMyProfile = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const defaultProfileImage = "https://res.cloudinary.com/dmr810p4l/image/upload/v1717297396/2150771125_osnw4b.jpg";
     const userProfile = yield prisma.user.findUnique({
         where: { id: userId },
         select: {
@@ -38,6 +26,7 @@ const getMyProfile = (userId) => __awaiter(void 0, void 0, void 0, function* () 
                 select: {
                     bio: true,
                     age: true,
+                    profileImage: true,
                 },
             },
             trips: true,
@@ -53,34 +42,37 @@ const getMyProfile = (userId) => __awaiter(void 0, void 0, void 0, function* () 
             },
         },
     });
-    return userProfile;
+    if (userProfile) {
+        // Ensure userProfile exists before accessing its properties
+        const modifiedUserProfile = Object.assign(Object.assign({}, userProfile), { userProfile: Object.assign(Object.assign({}, userProfile.userProfile), { profileImage: ((_a = userProfile.userProfile) === null || _a === void 0 ? void 0 : _a.profileImage) ||
+                    defaultProfileImage }) });
+        return modifiedUserProfile;
+    }
+    return null;
 });
 const updateUserProfile = (userId, data) => __awaiter(void 0, void 0, void 0, function* () {
-    const updatedProfile = yield prisma.user.update({
+    const updatedProfile = yield prisma.userProfile.update({
         where: {
-            id: userId,
+            userId: userId,
         },
-        data: Object.assign(Object.assign({}, data), { userProfile: {
-                update: Object.assign({}, data.userProfile),
-            } }),
+        data: {
+            bio: data.bio,
+            age: data.age,
+        },
         select: {
             id: true,
-            name: true,
-            email: true,
-            userProfile: {
+            bio: true,
+            age: true,
+            user: {
                 select: {
-                    bio: true,
-                    age: true,
+                    name: true,
                 },
             },
-            createdAt: true,
-            updatedAt: true,
         },
     });
     return updatedProfile;
 });
 exports.UserProfileServices = {
-    getUserProfile,
     getMyProfile,
     updateUserProfile,
 };

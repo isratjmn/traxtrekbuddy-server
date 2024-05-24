@@ -14,18 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserProfileControllers = void 0;
 const http_status_1 = __importDefault(require("http-status"));
-const ConsignResponse_1 = __importDefault(require("../../../mutual/ConsignResponse"));
 const profile_service_1 = require("./profile.service");
 const asyncHandler_1 = __importDefault(require("../../../mutual/asyncHandler"));
-const getUserProfile = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const userProfile = yield profile_service_1.UserProfileServices.getUserProfile();
-    return (0, ConsignResponse_1.default)(res, {
-        statusCode: http_status_1.default.OK,
-        success: true,
-        message: "User profile retrieved successfully..!!",
-        data: userProfile,
-    });
-}));
 const getMyProfile = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
@@ -40,7 +30,7 @@ const getMyProfile = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0,
 const updateProfile = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _b;
     const userId = (_b = req.user) === null || _b === void 0 ? void 0 : _b.id;
-    const payload = req.body;
+    const { bio, age } = req.body;
     if (!userId) {
         return res.status(http_status_1.default.UNAUTHORIZED).json({
             success: false,
@@ -48,7 +38,7 @@ const updateProfile = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0
             message: "User ID not found",
         });
     }
-    const updatedProfile = yield profile_service_1.UserProfileServices.updateUserProfile(userId, payload);
+    const updatedProfile = yield profile_service_1.UserProfileServices.updateUserProfile(userId, { bio, age });
     return res.status(http_status_1.default.OK).json({
         success: true,
         statusCode: http_status_1.default.OK,
@@ -57,7 +47,6 @@ const updateProfile = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0
     });
 }));
 exports.UserProfileControllers = {
-    getUserProfile,
     getMyProfile,
     updateProfile,
 };

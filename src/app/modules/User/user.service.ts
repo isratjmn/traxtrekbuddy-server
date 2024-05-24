@@ -1,11 +1,16 @@
 import httpStatus from "http-status";
 import APIError from "../../errors/APIError";
-import { PrismaClient, Role, UserStatus } from "@prisma/client";
+import {
+	PrismaClient,
+	Role,
+	TravelBuddyStatus,
+	UserStatus,
+} from "@prisma/client";
 import { buildUserQueryParams } from "../../../Utils/buildUserQueryParams";
 
 const prisma = new PrismaClient();
 
-/* const getAllUser = async (user: any) => {
+const getAllUser = async (user: any, queryParams: any) => {
 	const adminDetails = await prisma.user.findFirst({
 		where: {
 			id: user?.id,
@@ -14,22 +19,59 @@ const prisma = new PrismaClient();
 	});
 
 	if (!adminDetails) {
-		throw new APIError(404, "Admin is not found!");
+		throw new APIError(404, "Admin not found!");
 	}
-
-	const result = await prisma.user.findMany({
-		select: {
-			id: true,
-			name: true,
-			email: true,
-			role: true,
-			status: true,
-		},
+	// Ensure queryParams is always an object
+	queryParams = queryParams || {};
+	const { where, pageNumber, limitNumber, sortBy, sortOrder } =
+		buildUserQueryParams(queryParams);
+	const [users, totalCount] = await Promise.all([
+		prisma.user.findMany({
+			where,
+			select: {
+				id: true,
+				name: true,
+				email: true,
+				role: true,
+				status: true,
+				userProfile: true,
+			},
+			orderBy: sortBy
+				? {
+						[sortBy]: sortOrder || "desc",
+				  }
+				: { email: "asc" },
+			take: limitNumber,
+			skip: (pageNumber - 1) * limitNumber,
+		}),
+		prisma.user.count({ where }),
+	]);
+	const defaultProfileImage =
+		"https://res.cloudinary.com/dmr810p4l/image/upload/v1717297396/2150771125_osnw4b.jpg";
+	const modifiedUsers = users.map((user) => {
+		return {
+			...user,
+			userProfile: {
+				...user.userProfile,
+				profileImage:
+					user.userProfile?.profileImage || defaultProfileImage,
+			},
+		};
 	});
-	return result;
-}; */
+	return {
+		success: true,
+		statusCode: httpStatus.OK,
+		message: "User info update successfully!",
+		meta: {
+			page: pageNumber,
+			limit: limitNumber,
+			total: totalCount,
+		},
+		data: modifiedUsers,
+	};
+};
 
-const getAllUser = async (user: any, queryParams: any) => {
+/* const getAllUser = async (user: any, queryParams: any) => {
 	const adminDetails = await prisma.user.findFirst({
 		where: {
 			id: user?.id,
@@ -80,7 +122,7 @@ const getAllUser = async (user: any, queryParams: any) => {
 		},
 		data: users,
 	};
-};
+}; */
 
 const updateUserInfo = async (userId: string, status: UserStatus) => {
 	const userInfo = await prisma.user.findFirstOrThrow({
@@ -138,8 +180,61 @@ const updateUserRole = async (userId: string, role: Role) => {
 	return result;
 };
 
+const getDashboardData = async (user: any) => {
+	const adminDetails = await prisma.user.findFirst({
+		where: {
+			id: user?.id,
+			role: user?.role,
+		},
+	});
+
+	if (!adminDetails) {
+		throw new APIError(404, "Admin is not found....!!");
+	}
+	const totalTrip = await prisma.trip.count({});
+	const totalUser = await prisma.user.count({});
+	const totalActiveUser = await prisma.user.count({
+		where: {
+			status: UserStatus.ACTIVE,
+		},
+	});
+	const totalDeActiveUser = await prisma.user.count({
+		where: {
+			status: UserStatus.DEACTIVE,
+		},
+	});
+	const totalTripRequest = await prisma.travelBuddyRequest.count({});
+	const totalTripRequestPending = await prisma.travelBuddyRequest.count({
+		where: {
+			status: TravelBuddyStatus.PENDING,
+		},
+	});
+	const totalTripRequestApproved = await prisma.travelBuddyRequest.count({
+		where: {
+			status: TravelBuddyStatus.APPROVED,
+		},
+	});
+	const totalTripRequestRejected = await prisma.travelBuddyRequest.count({
+		where: {
+			status: TravelBuddyStatus.REJECTED,
+		},
+	});
+
+	return {
+		totalTrip,
+		totalUser,
+		totalActiveUser,
+		totalDeActiveUser,
+		totalTripRequest,
+		totalTripRequestPending,
+		totalTripRequestApproved,
+		totalTripRequestRejected,
+	};
+};
+
 export const userService = {
 	getAllUser,
 	updateUserInfo,
 	updateUserRole,
+	getDashboardData,
 };

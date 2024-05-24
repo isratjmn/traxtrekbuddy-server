@@ -220,11 +220,23 @@ const getTripById = (tripId) => __awaiter(void 0, void 0, void 0, function* () {
         throw error;
     }
 });
-const sendTravelBuddyRequest = (tripId, userId) => __awaiter(void 0, void 0, void 0, function* () {
+const sendTravelBuddyRequest = (user, tripId, payload) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // Check if the trip exists
+        // Check if the user has already sent two requests for the trip
+        const requestCount = yield prisma.travelBuddyRequest.count({
+            where: {
+                tripId,
+                userId: user.id,
+            },
+        });
+        if (requestCount >= 2) {
+            throw new Error("You cannot send more than two requests for this trip.");
+        }
+        // Proceed with creating the request if the limit is not reached
         const trip = yield prisma.trip.findUnique({
-            where: { id: tripId },
+            where: {
+                id: tripId,
+            },
         });
         if (!trip) {
             throw new APIError_1.default(http_status_1.default.NOT_FOUND, "Trip not found");
@@ -232,7 +244,7 @@ const sendTravelBuddyRequest = (tripId, userId) => __awaiter(void 0, void 0, voi
         const request = yield prisma.travelBuddyRequest.create({
             data: {
                 tripId,
-                userId,
+                userId: user.id,
                 status: "PENDING",
             },
         });
