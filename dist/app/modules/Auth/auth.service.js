@@ -20,6 +20,44 @@ const http_status_1 = __importDefault(require("http-status"));
 const jwtUtils_1 = require("../../../Utils/jwtUtils");
 const config_1 = __importDefault(require("../../../config"));
 const prisma = new client_1.PrismaClient();
+const createUser = (data) => __awaiter(void 0, void 0, void 0, function* () {
+    const existingUser = yield prisma.user.findUnique({
+        where: {
+            id: data.id,
+            email: data.email,
+        },
+    });
+    if (existingUser) {
+        throw new APIError_1.default(http_status_1.default.BAD_REQUEST, 'Email Already Exists!!!');
+    }
+    const hashedPassword = yield bcrypt_1.default.hash(data.password, 12);
+    const userData = {
+        name: data.name,
+        email: data.email,
+        password: hashedPassword,
+        role: data.role,
+    };
+    const newUser = yield prisma.$transaction((transactionClient) => __awaiter(void 0, void 0, void 0, function* () {
+        const createdUser = yield transactionClient.user.create({
+            data: userData,
+            include: {
+                userProfile: true
+            }
+        });
+        console.log(userData);
+        if (data.role === 'admin') {
+            yield transactionClient.admin.create({
+                data: {
+                    name: data === null || data === void 0 ? void 0 : data.name,
+                    email: data === null || data === void 0 ? void 0 : data.email,
+                    password: hashedPassword,
+                }
+            });
+        }
+        return createdUser;
+    }));
+    return newUser;
+});
 const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const userData = yield prisma.user.findUniqueOrThrow({
         where: {
@@ -48,6 +86,31 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         token,
     };
 });
+const changePassword = (user, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const userData = yield prisma.user.findUniqueOrThrow({
+        where: {
+            email: user.email,
+        },
+    });
+    const isCorrectPassword = yield bcrypt_1.default.compare(payload.currentPassword, userData.password);
+    if (!isCorrectPassword) {
+        throw new APIError_1.default(http_status_1.default.UNAUTHORIZED, "Incorrect password");
+    }
+    const hashedPassword = yield bcrypt_1.default.hash(payload.newPassword, 10);
+    yield prisma.user.update({
+        where: {
+            email: userData.email,
+        },
+        data: {
+            password: hashedPassword,
+        },
+    });
+    return {
+        message: "Password changed successfully",
+    };
+});
 exports.AuthServices = {
-    loginUser
+    createUser,
+    loginUser,
+    changePassword
 };

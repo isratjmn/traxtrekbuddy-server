@@ -17,9 +17,8 @@ const ConsignResponse_1 = __importDefault(require("../../../mutual/ConsignRespon
 const http_status_1 = __importDefault(require("http-status"));
 const auth_service_1 = require("./auth.service");
 const asyncHandler_1 = __importDefault(require("../../../mutual/asyncHandler"));
-const user_service_1 = require("../User/user.service");
 const registerUser = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield user_service_1.UserService.createUser(req.body);
+    const result = yield auth_service_1.AuthServices.createUser(req.body);
     (0, ConsignResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
@@ -48,7 +47,21 @@ const login = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0
         }
     });
 }));
+const changePassword = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = req.user;
+    const result = yield auth_service_1.AuthServices.changePassword(user, req.body);
+    (0, ConsignResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Password changed successfully",
+        data: {
+            status: 200,
+            message: "Password changed successfully",
+        },
+    });
+}));
 exports.AuthControllers = {
     registerUser,
-    login
+    login,
+    changePassword,
 };

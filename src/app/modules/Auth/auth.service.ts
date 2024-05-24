@@ -12,14 +12,20 @@ const prisma = new PrismaClient();
 const createUser = async (data: TUser) => {
     const existingUser = await prisma.user.findUnique({
         where: {
-            id: data.id,
+            
             email: data.email,
         },
     });
 
+
     if (existingUser)
     {
         throw new APIError(httpStatus.BAD_REQUEST, 'Email Already Exists!!!');
+    }
+
+    if (data.password !== data.confirmPassword)
+    {
+        throw new APIError(httpStatus.BAD_REQUEST, 'Passwords do not match!!!');
     }
 
     const hashedPassword: string = await bcrypt.hash(data.password, 12);
@@ -52,6 +58,17 @@ const createUser = async (data: TUser) => {
                 }
             });
         }
+        // Generate the token but do not return it
+        const token = jwtUtils.generateToken({
+            email: userData.email,
+            name: userData.name,
+            role: userData.role,
+
+        },
+            config.jwt.jwt_secret as Secret,
+            config.jwt.expires_in as string
+        );
+        console.log("------------", token);
         return createdUser;
     });
 
@@ -96,22 +113,37 @@ const loginUser = async (payload: { email: string, name: string, password: strin
 
 };
 
-const changePassword = async (user: any, payload: any) => {
+interface ChangePasswordInput {
+    currentPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+}
+
+const changePassword = async (user: any, { currentPassword, newPassword, confirmPassword }: ChangePasswordInput) => {
+
+    if (newPassword !== confirmPassword)
+    {
+        throw new Error('New password and confirm password do not match');
+    }
     const userData = await prisma.user.findUniqueOrThrow({
         where: {
+            id: user.id,
             email: user.email,
-
         },
     });
 
-    const isCorrectPassword = await bcrypt.compare(payload.currentPassword, userData.password);
+    if (!userData)
+    {
+        throw new Error('User not found');
+    }
 
+    const isCorrectPassword = await bcrypt.compare(currentPassword, userData.password);
     if (!isCorrectPassword)
     {
         throw new APIError(httpStatus.UNAUTHORIZED, "Incorrect password");
     }
 
-    const hashedPassword = await bcrypt.hash(payload.newPassword, 10);
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     await prisma.user.update({
         where: {
@@ -121,7 +153,6 @@ const changePassword = async (user: any, payload: any) => {
             password: hashedPassword,
         },
     });
-
     return {
         message: "Password changed successfully",
     };

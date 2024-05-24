@@ -1,8 +1,9 @@
 export interface TUser {
-    id: any;
+    // id: string;
     name: string;
     email: string;
     password: string;
+    confirmPassword: string;
     role?: "user" | "admin";
     userProfile?: {
         bio?: string;
