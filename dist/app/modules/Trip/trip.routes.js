@@ -13,9 +13,8 @@ const client_1 = require("@prisma/client");
 const router = express_1.default.Router();
 exports.tripRoutes = router;
 exports.tripsRoutes = router;
-router.post("/", (0, auth_1.default)("user", "admin"), UploaderFileHelper_1.UploadFileHelper.upload.single("file"), (req, res, next) => {
+router.post("/", (0, auth_1.default)(client_1.Role.user, client_1.Role.admin), UploaderFileHelper_1.UploadFileHelper.upload.single("file"), (req, res, next) => {
     req.body = trip_validation_1.TripsValidation.CreateTripSchema.parse(JSON.parse(req.body.data));
-    console.log(req.body);
     return trip_controller_1.TripControllers.createTrip(req, res, next);
 });
 router.get("/", trip_controller_1.TripControllers.getTrips);

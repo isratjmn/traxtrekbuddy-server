@@ -50,7 +50,6 @@ const respondToRequest = (0, asyncHandler_1.default)((req, res) => __awaiter(voi
     const { buddyId } = req.params;
     const { tripId, status } = req.body;
     const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
-    console.log("🚀 ~ respondToRequest ~ buddyId:", buddyId);
     const response = yield travelbuddy_service_1.TravelBuddyServices.respondToTravelBuddy(buddyId, { tripId, status }, userId);
     if (!response) {
         res.status(404).json({

@@ -107,7 +107,7 @@ export const buildQueryParams = (queryParams: any = {}) => {
 			travelType
 				? { travelType: { contains: travelType, mode: "insensitive" } }
 				: undefined,
-		].filter(Boolean), // Filter out undefined conditions
+		].filter(Boolean),
 		...(searchTerm && {
 			OR: [
 				{ destination: { contains: searchTerm, mode: "insensitive" } },

@@ -44,7 +44,6 @@ const createUser = (data) => __awaiter(void 0, void 0, void 0, function* () {
         const createdUser = yield transactionClient.user.create({
             data: userData,
         });
-        console.log(userData);
         if (data.role === "admin") {
             yield transactionClient.admin.create({
                 data: {

@@ -5,7 +5,11 @@ import { Role } from "@prisma/client";
 
 const router = express.Router();
 
-router.get("/", auth(Role.user), UserProfileControllers.getUserProfile);
+router.get(
+	"/",
+	auth(Role.user, Role.admin),
+	UserProfileControllers.getUserProfile
+);
 
 router.get(
 	"/my-profile",
@@ -13,8 +17,8 @@ router.get(
 	UserProfileControllers.getMyProfile
 );
 
-router.put(
-	"/",
+router.patch(
+	"/:id",
 	auth(Role.user, Role.admin),
 	// requestvalidate(UserProfileValidation.UpdateProfileSchema),
 	UserProfileControllers.updateProfile

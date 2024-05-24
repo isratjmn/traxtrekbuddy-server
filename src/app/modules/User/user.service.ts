@@ -56,6 +56,7 @@ const getAllUser = async (user: any, queryParams: any) => {
 				email: true,
 				role: true,
 				status: true,
+				userProfile: true,
 			},
 			orderBy: sortBy
 				? {
@@ -69,6 +70,9 @@ const getAllUser = async (user: any, queryParams: any) => {
 	]);
 
 	return {
+		success: true,
+		statusCode: httpStatus.OK,
+		message: "User info update successfully!",
 		meta: {
 			page: pageNumber,
 			limit: limitNumber,

@@ -36,7 +36,6 @@ const createUser = async (data: TUser) => {
 		const createdUser = await transactionClient.user.create({
 			data: userData,
 		});
-		console.log(userData);
 
 		if (data.role === "admin") {
 			await transactionClient.admin.create({

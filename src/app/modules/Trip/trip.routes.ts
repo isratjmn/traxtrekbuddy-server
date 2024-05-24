@@ -15,7 +15,7 @@ router.post(
 		req.body = TripsValidation.CreateTripSchema.parse(
 			JSON.parse(req.body.data)
 		);
-		console.log(req.body);
+		
 		return TripControllers.createTrip(req, res, next);
 	}
 );

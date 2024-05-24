@@ -3,12 +3,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const validateQueryParams = (queryParams) => {
     const allowedParams = new Set([
         "destination",
+        "description",
         "startDate",
         "endDate",
-        "budget",
+        "travelType",
+        "location",
         "searchTerm",
-        "minBudget",
-        "maxBudget",
+        "role",
+        "status",
+        "email",
         "page",
         "limit",
         "sortBy",

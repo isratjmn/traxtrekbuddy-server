@@ -41,10 +41,8 @@ const createTrip = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, v
         return;
     }
     const file = req.file;
-    console.log(file);
     if (file) {
         const uploadedProfileImage = yield UploaderFileHelper_1.UploadFileHelper.uploadToCloudinary(file);
-        console.log(req.body);
         req.body.photos = uploadedProfileImage === null || uploadedProfileImage === void 0 ? void 0 : uploadedProfileImage.secure_url;
     }
     const tripData = Object.assign(Object.assign({}, req.body), { userId: id });
@@ -58,18 +56,8 @@ const createTrip = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, v
 }));
 //* GETTING ALL THE TRIPS
 const getTrips = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const result = yield trip_service_1.TripServices.getTrips(req.query);
-        return res.status(http_status_1.default.OK).json(result);
-    }
-    catch (error) {
-        return res.status(http_status_1.default.INTERNAL_SERVER_ERROR).json({
-            success: false,
-            statusCode: http_status_1.default.INTERNAL_SERVER_ERROR,
-            message: "Failed to fetch trips",
-            error: error === null || error === void 0 ? void 0 : error.name,
-        });
-    }
+    const result = yield trip_service_1.TripServices.getTrips(req.query);
+    return res.status(http_status_1.default.OK).json(result);
 }));
 //* GET A PERTICULAR TRIP
 const getTrip = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {

@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "trips" ALTER COLUMN "itinerary" SET NOT NULL,
+ALTER COLUMN "itinerary" SET DATA TYPE TEXT,
+ALTER COLUMN "travelType" SET NOT NULL,
+ALTER COLUMN "travelType" SET DATA TYPE TEXT;

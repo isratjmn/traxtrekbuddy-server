@@ -49,8 +49,6 @@ const respondToRequest = asyncHandler(
 		const { tripId, status } = req.body;
 		const userId = req.user?.id;
 
-		console.log("🚀 ~ respondToRequest ~ buddyId:", buddyId);
-
 		const response = await TravelBuddyServices.respondToTravelBuddy(
 			buddyId,
 			{ tripId, status },

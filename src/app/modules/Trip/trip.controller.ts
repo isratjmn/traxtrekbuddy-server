@@ -17,12 +17,12 @@ const createTrip = asyncHandler(async (req: Request, res: Response) => {
 		return;
 	}
 	const file = req.file as IUploadFile;
-	console.log(file);
+
 	if (file) {
 		const uploadedProfileImage = await UploadFileHelper.uploadToCloudinary(
 			file
 		);
-		console.log(req.body);
+
 		req.body.photos = uploadedProfileImage?.secure_url;
 	}
 	const tripData = {
@@ -39,21 +39,10 @@ const createTrip = asyncHandler(async (req: Request, res: Response) => {
 	});
 });
 
-
-
 //* GETTING ALL THE TRIPS
 const getTrips = asyncHandler(async (req: Request, res: Response) => {
-	try {
-		const result = await TripServices.getTrips(req.query);
-		return res.status(httpStatus.OK).json(result);
-	} catch (error: any) {
-		return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-			success: false,
-			statusCode: httpStatus.INTERNAL_SERVER_ERROR,
-			message: "Failed to fetch trips",
-			error: error?.name,
-		});
-	}
+	const result = await TripServices.getTrips(req.query);
+	return res.status(httpStatus.OK).json(result);
 });
 
 //* GET A PERTICULAR TRIP

@@ -11,13 +11,7 @@ const getAllUser = asyncHandler(
 		const queryParams = req.query;
 
 		const result = await userService.getAllUser(user, queryParams);
-
-		ConsignResponse(res, {
-			success: true,
-			statusCode: httpStatus.OK,
-			message: "All User retrieved successfully!",
-			data: result,
-		});
+		return res.status(httpStatus.OK).json(result);
 	}
 );
 

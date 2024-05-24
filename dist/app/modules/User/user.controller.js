@@ -19,13 +19,9 @@ const asyncHandler_1 = __importDefault(require("../../../mutual/asyncHandler"));
 const user_service_1 = require("./user.service");
 const getAllUser = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
-    const result = yield user_service_1.userService.getAllUser(user);
-    (0, ConsignResponse_1.default)(res, {
-        success: true,
-        statusCode: http_status_1.default.OK,
-        message: "All User retrieved successfully!",
-        data: result,
-    });
+    const queryParams = req.query;
+    const result = yield user_service_1.userService.getAllUser(user, queryParams);
+    return res.status(http_status_1.default.OK).json(result);
 }));
 const updateUserInfo = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;

@@ -15,9 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TripServices = void 0;
 const client_1 = require("@prisma/client");
 const http_status_1 = __importDefault(require("http-status"));
-const validateQueryParams_1 = __importDefault(require("../../../Utils/validateQueryParams"));
 const date_fns_1 = require("date-fns");
 const APIError_1 = __importDefault(require("../../errors/APIError"));
+const buildQueryParams_1 = require("../../../Utils/buildQueryParams");
 const prisma = new client_1.PrismaClient();
 const createTrip = (tripData) => __awaiter(void 0, void 0, void 0, function* () {
     const defaultImage = "https://res.cloudinary.com/dmr810p4l/image/upload/v1716664486/img_akl3jv.webp";
@@ -39,40 +39,147 @@ const createTrip = (tripData) => __awaiter(void 0, void 0, void 0, function* () 
     });
     return trip;
 });
+// const getTrips = async (queryParams: any) => {
+// 	validateQueryParams(queryParams);
+// 	const {
+// 		destination,
+// 		description,
+// 		startDate,
+// 		endDate,
+// 		travelType,
+// 		searchTerm,
+// 		page = 1,
+// 		limit = 10,
+// 		sortBy,
+// 		sortOrder,
+// 	} = queryParams;
+// 	const pageNumber = parseInt(page);
+// 	const limitNumber = parseInt(limit);
+// 	const where = {
+// 		destination: destination ? { contains: destination } : undefined,
+// 		startDate: startDate ? { gte: new Date(startDate) } : undefined,
+// 		endDate: endDate ? { lte: new Date(endDate) } : undefined,
+// 		/* budget: budget
+//             ? {
+//                 gte: parseInt(budget.minBudget),
+//                 lte: parseInt(budget.maxBudget),
+//             }
+//             : undefined,
+//         OR: searchTerm
+//             ? [
+//                 { destination: { contains: searchTerm } },
+//                 { budget: parseInt(searchTerm) },
+//             ]
+//             : undefined, */
+// 	};
+// 	/* if (minBudget && maxBudget)
+//     {
+//         where.budget = {
+//             gte: parseInt(minBudget),
+//             lte: parseInt(maxBudget),
+//         };
+//     } */
+// 	const [trips, totalCount] = await Promise.all([
+// 		prisma.trip.findMany({
+// 			where,
+// 			orderBy: sortBy
+// 				? {
+// 						[sortBy]: sortOrder || "desc",
+// 				}
+// 				: { location: "desc" },
+// 			take: limitNumber,
+// 			skip: (pageNumber - 1) * limitNumber,
+// 		}),
+// 		prisma.trip.count({ where }),
+// 	]);
+// 	return {
+// 		success: true,
+// 		statusCode: httpStatus.OK,
+// 		message: "Trips retrieved successfully....!!",
+// 		meta: {
+// 			page: pageNumber,
+// 			limit: limitNumber,
+// 			total: totalCount,
+// 		},
+// 		data: trips,
+// 	};
+// };
+// const getTrips = async (queryParams: any) => {
+// 	validateQueryParams(queryParams);
+// 	const {
+// 		destination,
+// 		description,
+// 		startDate,
+// 		endDate,
+// 		travelType,
+// 		searchTerm,
+// 		page = 1,
+// 		limit = 10,
+// 		sortBy,
+// 		sortOrder,
+// 	} = queryParams;
+// 	const pageNumber = parseInt(page);
+// 	const limitNumber = parseInt(limit);
+// 	const where: any = {
+// 		AND: [
+// 			destination
+// 				? {
+// 						destination: {
+// 							contains: destination,
+// 							mode: "insensitive",
+// 						},
+// 				  }
+// 				: {},
+// 			description
+// 				? {
+// 						description: {
+// 							contains: description,
+// 							mode: "insensitive",
+// 						},
+// 				  }
+// 				: {},
+// 			startDate ? { startDate: { gte: new Date(startDate) } } : {},
+// 			endDate ? { endDate: { lte: new Date(endDate) } } : {},
+// 			travelType
+// 				? { travelType: { contains: travelType, mode: "insensitive" } }
+// 				: {},
+// 		],
+// 		...(searchTerm && {
+// 			OR: [
+// 				{ destination: { contains: searchTerm, mode: "insensitive" } },
+// 				{ description: { contains: searchTerm, mode: "insensitive" } },
+// 				{ travelType: { contains: searchTerm, mode: "insensitive" } },
+// 				{ location: { contains: searchTerm, mode: "insensitive" } },
+// 			],
+// 		}),
+// 	};
+// 	const [trips, totalCount] = await Promise.all([
+// 		prisma.trip.findMany({
+// 			where,
+// 			orderBy: sortBy
+// 				? {
+// 						[sortBy]: sortOrder || "desc",
+// 				  }
+// 				: { location: "desc" },
+// 			take: limitNumber,
+// 			skip: (pageNumber - 1) * limitNumber,
+// 		}),
+// 		prisma.trip.count({ where }),
+// 	]);
+// 	return {
+// 		success: true,
+// 		statusCode: httpStatus.OK,
+// 		message: "Trips retrieved successfully....!!",
+// 		meta: {
+// 			page: pageNumber,
+// 			limit: limitNumber,
+// 			total: totalCount,
+// 		},
+// 		data: trips,
+// 	};
+// };
 const getTrips = (queryParams) => __awaiter(void 0, void 0, void 0, function* () {
-    (0, validateQueryParams_1.default)(queryParams);
-    const { destination, description, startDate, endDate, travelType, itinerary, location, 
-    // budget,
-    searchTerm, 
-    /* minBudget,
-    maxBudget, */
-    page = 1, limit = 10, sortBy, sortOrder, } = queryParams;
-    const pageNumber = parseInt(page);
-    const limitNumber = parseInt(limit);
-    const where = {
-        destination: destination ? { contains: destination } : undefined,
-        startDate: startDate ? { gte: new Date(startDate) } : undefined,
-        endDate: endDate ? { lte: new Date(endDate) } : undefined,
-        /* budget: budget
-            ? {
-                gte: parseInt(budget.minBudget),
-                lte: parseInt(budget.maxBudget),
-            }
-            : undefined,
-        OR: searchTerm
-            ? [
-                { destination: { contains: searchTerm } },
-                { budget: parseInt(searchTerm) },
-            ]
-            : undefined, */
-    };
-    /* if (minBudget && maxBudget)
-    {
-        where.budget = {
-            gte: parseInt(minBudget),
-            lte: parseInt(maxBudget),
-        };
-    } */
+    const { where, pageNumber, limitNumber, sortBy, sortOrder } = (0, buildQueryParams_1.buildQueryParams)(queryParams);
     const [trips, totalCount] = yield Promise.all([
         prisma.trip.findMany({
             where,
@@ -80,7 +187,7 @@ const getTrips = (queryParams) => __awaiter(void 0, void 0, void 0, function* ()
                 ? {
                     [sortBy]: sortOrder || "desc",
                 }
-                : { location: "desc" },
+                : { createdAt: "desc" },
             take: limitNumber,
             skip: (pageNumber - 1) * limitNumber,
         }),
@@ -135,20 +242,6 @@ const sendTravelBuddyRequest = (tripId, userId) => __awaiter(void 0, void 0, voi
         throw new Error("Failed to send travel buddy request");
     }
 });
-/* const deleteTrip = async (id: string) => {
-    await prisma.trip.findUniqueOrThrow({
-        where: {
-            id,
-        },
-    });
-    const result = await prisma.trip.delete({
-        where: {
-            id,
-        },
-    });
-    return result;
-};
- */
 const deleteTrip = (tripId) => __awaiter(void 0, void 0, void 0, function* () {
     // Delete related TravelBuddy records first
     yield prisma.travelBuddyRequest.deleteMany({

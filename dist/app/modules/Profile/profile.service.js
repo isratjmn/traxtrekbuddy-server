@@ -18,8 +18,7 @@ const getUserProfile = () => __awaiter(void 0, void 0, void 0, function* () {
             id: true,
             name: true,
             email: true,
-            createdAt: true,
-            updatedAt: true,
+            userProfile: true,
         },
     });
     if (!userDetails) {
