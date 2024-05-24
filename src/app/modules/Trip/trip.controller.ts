@@ -39,6 +39,8 @@ const createTrip = asyncHandler(async (req: Request, res: Response) => {
 	});
 });
 
+
+
 //* GETTING ALL THE TRIPS
 const getTrips = asyncHandler(async (req: Request, res: Response) => {
 	try {

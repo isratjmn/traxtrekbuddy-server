@@ -1,26 +1,25 @@
-
 const validateQueryParams = (queryParams: any) => {
-    const allowedParams = new Set([
-        "destination",
-        "startDate",
-        "endDate",
-        "budget",
-        "searchTerm",
-        "minBudget",
-        "maxBudget",
-        "page",
-        "limit",
-        "sortBy",
-        "sortOrder",
-    ]);
-    for (const param in queryParams)
-    {
-        if (!allowedParams.has(param))
-        {
-            throw new Error(`Invalid query parameter: ${param}`);
-        }
-    }
+	const allowedParams = new Set([
+		"destination",
+		"description",
+		"startDate",
+		"endDate",
+		"travelType",
+		"location",
+		"searchTerm",
+		"role",
+		"status",
+		"email",
+		"page",
+		"limit",
+		"sortBy",
+		"sortOrder",
+	]);
+	for (const param in queryParams) {
+		if (!allowedParams.has(param)) {
+			throw new Error(`Invalid query parameter: ${param}`);
+		}
+	}
 };
-
 
 export default validateQueryParams;

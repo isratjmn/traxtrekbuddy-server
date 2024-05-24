@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.post(
 	"/",
-	auth("user", "admin"),
+	auth(Role.user, Role.admin),
 	UploadFileHelper.upload.single("file"),
 	(req: Request, res: Response, next: NextFunction) => {
 		req.body = TripsValidation.CreateTripSchema.parse(

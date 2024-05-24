@@ -8,8 +8,9 @@ import { userService } from "./user.service";
 const getAllUser = asyncHandler(
 	async (req: Request & { user?: any }, res: Response) => {
 		const user = req.user;
+		const queryParams = req.query;
 
-		const result = await userService.getAllUser(user);
+		const result = await userService.getAllUser(user, queryParams);
 
 		ConsignResponse(res, {
 			success: true,

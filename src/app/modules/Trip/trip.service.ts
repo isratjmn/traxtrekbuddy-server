@@ -4,6 +4,7 @@ import validateQueryParams from "../../../Utils/validateQueryParams";
 import { TripData } from "./trip.interface";
 import { parseISO, format } from "date-fns";
 import APIError from "../../errors/APIError";
+import { buildQueryParams } from "../../../Utils/buildQueryParams";
 
 const prisma = new PrismaClient();
 
@@ -30,55 +31,160 @@ const createTrip = async (tripData: TripData): Promise<Trip> => {
 	return trip;
 };
 
+// const getTrips = async (queryParams: any) => {
+// 	validateQueryParams(queryParams);
+// 	const {
+// 		destination,
+// 		description,
+// 		startDate,
+// 		endDate,
+// 		travelType,
+// 		searchTerm,
+// 		page = 1,
+// 		limit = 10,
+// 		sortBy,
+// 		sortOrder,
+// 	} = queryParams;
+
+// 	const pageNumber = parseInt(page);
+// 	const limitNumber = parseInt(limit);
+
+// 	const where = {
+// 		destination: destination ? { contains: destination } : undefined,
+// 		startDate: startDate ? { gte: new Date(startDate) } : undefined,
+// 		endDate: endDate ? { lte: new Date(endDate) } : undefined,
+
+// 		/* budget: budget
+//             ? {
+//                 gte: parseInt(budget.minBudget),
+//                 lte: parseInt(budget.maxBudget),
+//             }
+//             : undefined,
+//         OR: searchTerm
+//             ? [
+//                 { destination: { contains: searchTerm } },
+//                 { budget: parseInt(searchTerm) },
+//             ]
+//             : undefined, */
+// 	};
+
+// 	/* if (minBudget && maxBudget)
+//     {
+//         where.budget = {
+//             gte: parseInt(minBudget),
+//             lte: parseInt(maxBudget),
+//         };
+//     } */
+// 	const [trips, totalCount] = await Promise.all([
+// 		prisma.trip.findMany({
+// 			where,
+// 			orderBy: sortBy
+// 				? {
+// 						[sortBy]: sortOrder || "desc",
+// 				}
+// 				: { location: "desc" },
+// 			take: limitNumber,
+// 			skip: (pageNumber - 1) * limitNumber,
+// 		}),
+// 		prisma.trip.count({ where }),
+// 	]);
+
+// 	return {
+// 		success: true,
+// 		statusCode: httpStatus.OK,
+// 		message: "Trips retrieved successfully....!!",
+// 		meta: {
+// 			page: pageNumber,
+// 			limit: limitNumber,
+// 			total: totalCount,
+// 		},
+// 		data: trips,
+// 	};
+// };
+
+// const getTrips = async (queryParams: any) => {
+// 	validateQueryParams(queryParams);
+// 	const {
+// 		destination,
+// 		description,
+// 		startDate,
+// 		endDate,
+// 		travelType,
+// 		searchTerm,
+// 		page = 1,
+// 		limit = 10,
+// 		sortBy,
+// 		sortOrder,
+// 	} = queryParams;
+
+// 	const pageNumber = parseInt(page);
+// 	const limitNumber = parseInt(limit);
+
+// 	const where: any = {
+// 		AND: [
+// 			destination
+// 				? {
+// 						destination: {
+// 							contains: destination,
+// 							mode: "insensitive",
+// 						},
+// 				  }
+// 				: {},
+// 			description
+// 				? {
+// 						description: {
+// 							contains: description,
+// 							mode: "insensitive",
+// 						},
+// 				  }
+// 				: {},
+// 			startDate ? { startDate: { gte: new Date(startDate) } } : {},
+// 			endDate ? { endDate: { lte: new Date(endDate) } } : {},
+// 			travelType
+// 				? { travelType: { contains: travelType, mode: "insensitive" } }
+// 				: {},
+// 		],
+// 		...(searchTerm && {
+// 			OR: [
+// 				{ destination: { contains: searchTerm, mode: "insensitive" } },
+// 				{ description: { contains: searchTerm, mode: "insensitive" } },
+// 				{ travelType: { contains: searchTerm, mode: "insensitive" } },
+// 				{ location: { contains: searchTerm, mode: "insensitive" } },
+// 			],
+// 		}),
+// 	};
+
+// 	const [trips, totalCount] = await Promise.all([
+// 		prisma.trip.findMany({
+// 			where,
+// 			orderBy: sortBy
+// 				? {
+// 						[sortBy]: sortOrder || "desc",
+// 				  }
+// 				: { location: "desc" },
+// 			take: limitNumber,
+// 			skip: (pageNumber - 1) * limitNumber,
+// 		}),
+// 		prisma.trip.count({ where }),
+// 	]);
+
+// 	return {
+// 		success: true,
+// 		statusCode: httpStatus.OK,
+// 		message: "Trips retrieved successfully....!!",
+// 		meta: {
+// 			page: pageNumber,
+// 			limit: limitNumber,
+// 			total: totalCount,
+// 		},
+// 		data: trips,
+// 	};
+// };
+
 const getTrips = async (queryParams: any) => {
-	validateQueryParams(queryParams);
-	const {
-		destination,
-		description,
-		startDate,
-		endDate,
-		travelType,
-		itinerary,
-		location,
-		// budget,
-		searchTerm,
-		/* minBudget,
-        maxBudget, */
-		page = 1,
-		limit = 10,
-		sortBy,
-		sortOrder,
-	} = queryParams;
+	const { where, pageNumber, limitNumber, sortBy, sortOrder } =
+		buildQueryParams(queryParams);
 
-	const pageNumber = parseInt(page);
-	const limitNumber = parseInt(limit);
-
-	const where = {
-		destination: destination ? { contains: destination } : undefined,
-		startDate: startDate ? { gte: new Date(startDate) } : undefined,
-		endDate: endDate ? { lte: new Date(endDate) } : undefined,
-
-		/* budget: budget
-            ? {
-                gte: parseInt(budget.minBudget),
-                lte: parseInt(budget.maxBudget),
-            }
-            : undefined,
-        OR: searchTerm
-            ? [
-                { destination: { contains: searchTerm } },
-                { budget: parseInt(searchTerm) },
-            ]
-            : undefined, */
-	};
-
-	/* if (minBudget && maxBudget)
-    {
-        where.budget = {
-            gte: parseInt(minBudget),
-            lte: parseInt(maxBudget),
-        };
-    } */
 	const [trips, totalCount] = await Promise.all([
 		prisma.trip.findMany({
 			where,
@@ -86,7 +192,7 @@ const getTrips = async (queryParams: any) => {
 				? {
 						[sortBy]: sortOrder || "desc",
 				  }
-				: { location: "desc" },
+				: { createdAt: "desc" },
 			take: limitNumber,
 			skip: (pageNumber - 1) * limitNumber,
 		}),
@@ -145,20 +251,6 @@ const sendTravelBuddyRequest = async (tripId: string, userId: string) => {
 	}
 };
 
-/* const deleteTrip = async (id: string) => {
-	await prisma.trip.findUniqueOrThrow({
-		where: {
-			id,
-		},
-	});
-	const result = await prisma.trip.delete({
-		where: {
-			id,
-		},
-	});
-	return result;
-};
- */
 const deleteTrip = async (tripId: string) => {
 	// Delete related TravelBuddy records first
 	await prisma.travelBuddyRequest.deleteMany({
