@@ -69,58 +69,6 @@ const getAllUser = (user, queryParams) => __awaiter(void 0, void 0, void 0, func
         data: modifiedUsers,
     };
 });
-/* const getAllUser = async (user: any, queryParams: any) => {
-    const adminDetails = await prisma.user.findFirst({
-        where: {
-            id: user?.id,
-            role: user?.role,
-        },
-    });
-
-    if (!adminDetails) {
-        throw new APIError(404, "Admin not found!");
-    }
-
-    // Ensure queryParams is always an object
-    queryParams = queryParams || {};
-
-    const { where, pageNumber, limitNumber, sortBy, sortOrder } =
-        buildUserQueryParams(queryParams);
-
-    const [users, totalCount] = await Promise.all([
-        prisma.user.findMany({
-            where,
-            select: {
-                id: true,
-                name: true,
-                email: true,
-                role: true,
-                status: true,
-                userProfile: true,
-            },
-            orderBy: sortBy
-                ? {
-                        [sortBy]: sortOrder || "desc",
-                  }
-                : { email: "asc" },
-            take: limitNumber,
-            skip: (pageNumber - 1) * limitNumber,
-        }),
-        prisma.user.count({ where }),
-    ]);
-
-    return {
-        success: true,
-        statusCode: httpStatus.OK,
-        message: "User info update successfully!",
-        meta: {
-            page: pageNumber,
-            limit: limitNumber,
-            total: totalCount,
-        },
-        data: users,
-    };
-}; */
 const updateUserInfo = (userId, status) => __awaiter(void 0, void 0, void 0, function* () {
     const userInfo = yield prisma.user.findFirstOrThrow({
         where: {
@@ -169,6 +117,59 @@ const updateUserRole = (userId, role) => __awaiter(void 0, void 0, void 0, funct
     });
     return result;
 });
+const deleteUser = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const deleteResult = yield prisma.$transaction((prisma) => __awaiter(void 0, void 0, void 0, function* () {
+        // Delete related UserProfile records first
+        yield prisma.userProfile.deleteMany({
+            where: {
+                userId: userId,
+            },
+        });
+        // Delete related Admin records
+        yield prisma.admin.deleteMany({
+            where: {
+                id: userId,
+            },
+        });
+        // Delete the user
+        const userDeletion = yield prisma.user.delete({
+            where: {
+                id: userId,
+            },
+        });
+        return userDeletion;
+    }));
+    return deleteResult;
+});
+/* const deleteUsers = async (userIds: string[]) => {
+    const deletedUsers = [];
+    for (const userId of userIds) {
+        const result = await prisma.$transaction(async (prisma) => {
+            // Delete related UserProfile records first
+            await prisma.userProfile.deleteMany({
+                where: {
+                    userId: userId,
+                },
+            });
+
+            // Delete related Admin records
+            await prisma.admin.deleteMany({
+                where: {
+                    id: userId,
+                },
+            });
+            // Delete the user
+            const userDeletion = await prisma.user.delete({
+                where: {
+                    id: userId,
+                },
+            });
+            return userDeletion;
+        });
+        deletedUsers.push(result);
+    }
+    return deletedUsers;
+}; */
 const getDashboardData = (user) => __awaiter(void 0, void 0, void 0, function* () {
     const adminDetails = yield prisma.user.findFirst({
         where: {
@@ -222,5 +223,6 @@ exports.userService = {
     getAllUser,
     updateUserInfo,
     updateUserRole,
+    deleteUser,
     getDashboardData,
 };

@@ -18,10 +18,13 @@ router.patch(
 );
 
 router.patch("/:id/role", auth(Role.admin), userController.updateUserRole);
+router.delete("/user/:userId", userController.deleteUser);
+
+// router.delete("/users", userController.deleteUser);
 
 router.get(
 	"/dashboard-data",
-	auth(Role.admin),
+	auth(Role.admin, Role.user),
 	userController.getDashboardData
 );
 

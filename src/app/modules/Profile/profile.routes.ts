@@ -11,10 +11,9 @@ router.get(
 	UserProfileControllers.getMyProfile
 );
 
-router.patch(
-	"/:id",
-	auth(Role.user, Role.admin),
-	// requestvalidate(UserProfileValidation.UpdateProfileSchema),
+router.put(
+	"/edit-profile",
+	auth(Role.admin, Role.user),
 	UserProfileControllers.updateProfile
 );
 

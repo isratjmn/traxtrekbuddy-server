@@ -50,22 +50,37 @@ const getMyProfile = (userId) => __awaiter(void 0, void 0, void 0, function* () 
     }
     return null;
 });
-const updateUserProfile = (userId, data) => __awaiter(void 0, void 0, void 0, function* () {
-    const updatedProfile = yield prisma.userProfile.update({
+const updateUserProfile = (data) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!data.id) {
+        throw new Error("User ID is required for updating the profile");
+    }
+    // Update user and userProfile in a single transaction
+    const updatedProfile = yield prisma.user.update({
         where: {
-            userId: userId,
+            id: data.id,
         },
         data: {
-            bio: data.bio,
-            age: data.age,
+            name: data.name,
+            email: data.email,
+            userProfile: data.userProfile
+                ? {
+                    update: {
+                        bio: data.userProfile.bio,
+                        age: data.userProfile.age,
+                        profileImage: data.userProfile.profileImage,
+                    },
+                }
+                : undefined,
         },
         select: {
             id: true,
-            bio: true,
-            age: true,
-            user: {
+            name: true,
+            role: true,
+            email: true,
+            userProfile: {
                 select: {
-                    name: true,
+                    bio: true,
+                    age: true,
                 },
             },
         },

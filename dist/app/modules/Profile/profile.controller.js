@@ -28,17 +28,10 @@ const getMyProfile = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0,
     });
 }));
 const updateProfile = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _b;
-    const userId = (_b = req.user) === null || _b === void 0 ? void 0 : _b.id;
-    const { bio, age } = req.body;
-    if (!userId) {
-        return res.status(http_status_1.default.UNAUTHORIZED).json({
-            success: false,
-            statusCode: http_status_1.default.UNAUTHORIZED,
-            message: "User ID not found",
-        });
+    if (req.user && !req.body.id) {
+        req.body.id = req.user.id;
     }
-    const updatedProfile = yield profile_service_1.UserProfileServices.updateUserProfile(userId, { bio, age });
+    const updatedProfile = yield profile_service_1.UserProfileServices.updateUserProfile(req.body);
     return res.status(http_status_1.default.OK).json({
         success: true,
         statusCode: http_status_1.default.OK,

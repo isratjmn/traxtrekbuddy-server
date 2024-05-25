@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { TUser } from "../User/user.interface";
 const prisma = new PrismaClient();
 
 const getMyProfile = async (userId: string) => {
@@ -51,25 +52,38 @@ const getMyProfile = async (userId: string) => {
 	return null;
 };
 
-const updateUserProfile = async (
-	userId: string,
-	data: Partial<{ bio: string; age: number }>
-) => {
-	const updatedProfile = await prisma.userProfile.update({
+const updateUserProfile = async (data: Partial<TUser>) => {
+	if (!data.id) {
+		throw new Error("User ID is required for updating the profile");
+	}
+
+	// Update user and userProfile in a single transaction
+	const updatedProfile = await prisma.user.update({
 		where: {
-			userId: userId,
+			id: data.id,
 		},
 		data: {
-			bio: data.bio,
-			age: data.age,
+			name: data.name,
+			email: data.email,
+			userProfile: data.userProfile
+				? {
+						update: {
+							bio: data.userProfile.bio,
+							age: data.userProfile.age,
+							profileImage: data.userProfile.profileImage,
+						},
+				  }
+				: undefined,
 		},
 		select: {
 			id: true,
-			bio: true,
-			age: true,
-			user: {
+			name: true,
+			role: true,
+			email: true,
+			userProfile: {
 				select: {
-					name: true,
+					bio: true,
+					age: true,
 				},
 			},
 		},

@@ -43,6 +43,32 @@ const updateUserRole = (0, asyncHandler_1.default)((req, res) => __awaiter(void 
         data: result,
     });
 }));
+const deleteUser = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userId } = req.params;
+    const request = yield user_service_1.userService.deleteUser(userId);
+    (0, ConsignResponse_1.default)(res, {
+        statusCode: http_status_1.default.CREATED,
+        success: true,
+        message: "User deleted successfully....!!!",
+        data: request,
+    });
+}));
+/* const deleteUsersFromDB = asyncHandler(async (req: Request, res: Response) => {
+    const { userId } = req.body;
+
+    if (!Array.isArray(userId) || userId.length === 0) {
+        return res.status(400).json({
+            message: "Invalid request. 'userIds' must be a non-empty array.",
+        });
+    }
+    const request = await userService.deleteUsers(userId);
+    ConsignResponse(res, {
+        statusCode: httpStatus.CREATED,
+        success: true,
+        message: "User deleted successfully....!!!",
+        data: request,
+    });
+}); */
 const getDashboardData = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const result = yield user_service_1.userService.getDashboardData(user);
@@ -57,5 +83,6 @@ exports.userController = {
     getAllUser,
     updateUserInfo,
     updateUserRole,
+    deleteUser,
     getDashboardData,
 };

@@ -14,9 +14,8 @@ app.use(
 	cors({
 		origin: ["https://traxtrek-client.vercel.app", "http://localhost:3000"],
 		methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-        allowedHeaders: ["Content-Type", "Authorization"],
-        credentials: true,
-		
+		allowedHeaders: ["Content-Type", "Authorization"],
+		credentials: true,
 	})
 );
 
