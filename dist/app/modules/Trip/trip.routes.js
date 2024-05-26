@@ -18,5 +18,7 @@ router.post('/', (0, auth_1.default)("user", "admin"), UploaderFileHelper_1.Uplo
     return trip_controller_1.TripControllers.createTrip(req, res, next);
 });
 router.get('/', trip_controller_1.TripControllers.getTrips);
-router.get('/:id', trip_controller_1.TripControllers.getTrip);
-router.post('/:tripId/request', (0, auth_1.default)("admin"), trip_controller_1.TripControllers.sendRequest);
+router.get('/:id', 
+// auth("user", "admin"),
+trip_controller_1.TripControllers.getTrip);
+router.post('/:tripId/request', (0, auth_1.default)("user", "admin"), trip_controller_1.TripControllers.sendRequest);

@@ -12,5 +12,5 @@ const profile_validation_1 = require("./profile.validation");
 const router = express_1.default.Router();
 router.get('/', (0, auth_1.default)("user"), profile_controller_1.UserProfileControllers.getUserProfile);
 router.get('/my-profile', (0, auth_1.default)("user", "admin"), profile_controller_1.UserProfileControllers.getMyProfile);
-router.put('/', (0, auth_1.default)("user"), (0, requstValidate_1.default)(profile_validation_1.UserProfileValidation.UpdateProfileSchema), profile_controller_1.UserProfileControllers.updateProfile);
+router.put('/', (0, auth_1.default)("user", "admin"), (0, requstValidate_1.default)(profile_validation_1.UserProfileValidation.UpdateProfileSchema), profile_controller_1.UserProfileControllers.updateProfile);
 exports.profileRoutes = router;

@@ -19,6 +19,7 @@ const travelbuddy_service_1 = require("./travelbuddy.service");
 const asyncHandler_1 = __importDefault(require("../../../mutual/asyncHandler"));
 const getPotentialTravelBuddies = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { tripId } = req.params;
+    console.log("--------tripId--------------", tripId);
     const potentialBuddies = yield travelbuddy_service_1.TravelBuddyServices.getTravelBuddies(tripId);
     return (0, ConsignResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,

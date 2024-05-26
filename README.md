@@ -1,14 +1,14 @@
 # TrekTrax TravelBuddy Server
 
-#### The Travel Buddy Matching assignment is aimed at building a web application that facilitates users in finding travel buddies for their trips. The application provides features for user registration, trip creation, travel buddy requests, and user profiles.
+#### The Travel Buddy Matching assignment is aimed at building a web application that facilitates users in finding travel buddies for their trips. The application provides features for user registration, trip creation, travel buddy requests, and user profiles
 
-#### Users can register, create trips with details like destination, dates, budget, and activities, and send/receive travel buddy requests for their trips. Additionally, users can update their profile information.
+#### Users can register, create trips with details like destination, dates, budget, and activities, and send/receive travel buddy requests for their trips. Additionally, users can update their profile information
 
-### Live Project Link: https://trektrax-server.vercel.app/
+### Live Project Link: [text](https://traxtrek-client.vercel.app/)
 
-### Github Repository Link: https://github.com/Porgramming-Hero-web-course/l2-b2-fullstack-track-assignment-8-isratjmn
+### Github Repository Link: Back-end: <https://github.com/isratjmn/traxtrekbuddy-server>
 
-### Video Presentation Link: https://drive.google.com/file/d/10CP9Zs_Y1javfHWKlurqxzh6J93Lk0Dz/view?usp=sharing
+### Video Presentation Link: [text](https://drive.google.com/file/d/10CP9Zs_Y1javfHWKlurqxzh6J93Lk0Dz/view?usp=sharing)
 
 ## Technologies Used
 
@@ -43,4 +43,4 @@
 
 4. Run the database migrations: `npx prisma migrate dev`
 
-5. Start the server: `npm start`
+5. Start the server: `npm run dev`
