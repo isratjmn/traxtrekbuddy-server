@@ -4,13 +4,13 @@
 
 #### Users can register, create trips with details like destination, dates, budget, and activities, and send/receive travel buddy requests for their trips. Additionally, users can update their profile information
 
-### Live Project Link: [text](https://traxtrek-client.vercel.app//)
+### Live Project Link: [Live Link](https://traxtrek-client.vercel.app//)
 
-### Live Deploy Server-site Link: [text](https://trektrax-server.vercel.app/)
+### Live Deploy Server-site Link: [Server Link](https://trektrax-server.vercel.app/)
 
 ### Github Repository Link: Back-end: <https://github.com/isratjmn/traxtrekbuddy-server>
 
-### Video Presentation Link: [text](https://drive.google.com/file/d/10CP9Zs_Y1javfHWKlurqxzh6J93Lk0Dz/view?usp=sharing)
+### Video Presentation Link: [Presentation](https://drive.google.com/file/d/10CP9Zs_Y1javfHWKlurqxzh6J93Lk0Dz/view?usp=sharing)
 
 ## Features
 
