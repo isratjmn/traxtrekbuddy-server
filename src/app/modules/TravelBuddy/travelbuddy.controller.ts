@@ -8,6 +8,7 @@ import asyncHandler from "../../../mutual/asyncHandler";
 const getPotentialTravelBuddies = asyncHandler(
     async (req: Request, res: Response) => {
         const { tripId } = req.params;
+        console.log("--------tripId--------------", tripId);
         const potentialBuddies = await TravelBuddyServices.getTravelBuddies(tripId);
 
         return ConsignResponse(res, {

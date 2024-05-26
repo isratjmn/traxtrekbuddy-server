@@ -10,6 +10,6 @@ router.get('/', auth("user"), UserProfileControllers.getUserProfile);
 
 router.get('/my-profile', auth("user", "admin"), UserProfileControllers.getMyProfile);
 
-router.put('/', auth("user"), requestvalidate(UserProfileValidation.UpdateProfileSchema), UserProfileControllers.updateProfile);
+router.put('/', auth("user", "admin"), requestvalidate(UserProfileValidation.UpdateProfileSchema), UserProfileControllers.updateProfile);
 
 export const profileRoutes = router;

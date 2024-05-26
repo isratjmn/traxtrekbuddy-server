@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TravelBuddyServices = void 0;
 // @ts-nocheck
 const client_1 = require("@prisma/client");
-const APIError_1 = __importDefault(require("../../middlewares/APIError"));
+const APIError_1 = __importDefault(require("../../errors/APIError"));
 const http_status_1 = __importDefault(require("http-status"));
 const prisma = new client_1.PrismaClient();
 const getTravelBuddies = (tripId) => __awaiter(void 0, void 0, void 0, function* () {

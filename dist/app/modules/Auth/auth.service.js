@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthServices = void 0;
 const client_1 = require("@prisma/client");
 const bcrypt_1 = __importDefault(require("bcrypt"));
-const APIError_1 = __importDefault(require("../../middlewares/APIError"));
+const APIError_1 = __importDefault(require("../../errors/APIError"));
 const http_status_1 = __importDefault(require("http-status"));
 const jwtUtils_1 = require("../../../Utils/jwtUtils");
 const config_1 = __importDefault(require("../../../config"));

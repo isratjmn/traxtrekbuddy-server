@@ -18,19 +18,22 @@ const http_status_1 = __importDefault(require("http-status"));
 const validateQueryParams_1 = __importDefault(require("../../../Utils/validateQueryParams"));
 const prisma = new client_1.PrismaClient();
 const createTrip = (tripData) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("Trip Data", tripData);
+    const defaultImage = 'https://res.cloudinary.com/dmr810p4l/image/upload/v1716664486/img_akl3jv.webp';
+    const data = {
+        destination: tripData.destination,
+        description: tripData.description,
+        startDate: new Date(tripData.startDate).toISOString(),
+        endDate: new Date(tripData.endDate).toISOString(),
+        travelType: tripData.travelType,
+        photos: tripData.photos || defaultImage,
+        itinerary: tripData.itinerary,
+        location: tripData.location,
+    };
+    if (tripData.userId) {
+        data.userId = tripData.userId;
+    }
     const trip = yield prisma.trip.create({
-        data: {
-            userId: tripData === null || tripData === void 0 ? void 0 : tripData.userId,
-            destination: tripData === null || tripData === void 0 ? void 0 : tripData.destination,
-            description: tripData === null || tripData === void 0 ? void 0 : tripData.description,
-            startDate: new Date(tripData.startDate).toISOString(),
-            endDate: new Date(tripData.endDate).toISOString(),
-            travelType: tripData === null || tripData === void 0 ? void 0 : tripData.travelType,
-            photos: (tripData === null || tripData === void 0 ? void 0 : tripData.photos) || null,
-            itinerary: tripData === null || tripData === void 0 ? void 0 : tripData.itinerary,
-            location: tripData === null || tripData === void 0 ? void 0 : tripData.location
-        },
+        data,
     });
     return trip;
 });

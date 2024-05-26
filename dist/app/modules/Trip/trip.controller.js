@@ -17,11 +17,11 @@ const http_status_1 = __importDefault(require("http-status"));
 const ConsignResponse_1 = __importDefault(require("../../../mutual/ConsignResponse"));
 const trip_service_1 = require("./trip.service");
 const asyncHandler_1 = __importDefault(require("../../../mutual/asyncHandler"));
+const UploaderFileHelper_1 = require("../../../mutual/UploaderFileHelper");
 //* CREATE TRIP
 const createTrip = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const id = (_a = req === null || req === void 0 ? void 0 : req.user) === null || _a === void 0 ? void 0 : _a.id;
-    console.log(req);
     if (!id) {
         res.status(401).json({
             success: false,
@@ -29,8 +29,14 @@ const createTrip = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, v
         });
         return;
     }
+    const file = req.file;
+    console.log(file);
+    if (file) {
+        const uploadedProfileImage = yield UploaderFileHelper_1.UploadFileHelper.uploadToCloudinary(file);
+        console.log(req.body);
+        req.body.photos = uploadedProfileImage === null || uploadedProfileImage === void 0 ? void 0 : uploadedProfileImage.secure_url;
+    }
     const tripData = Object.assign(Object.assign({}, req.body), { userId: id });
-    console.log(tripData);
     const newTrip = yield trip_service_1.TripServices.createTrip(tripData);
     (0, ConsignResponse_1.default)(res, {
         success: true,

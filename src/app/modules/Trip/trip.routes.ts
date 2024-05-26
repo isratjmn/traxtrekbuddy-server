@@ -20,9 +20,13 @@ router.post('/',
 
 router.get('/', TripControllers.getTrips);
 
-router.get('/:id', TripControllers.getTrip);
+router.get('/:id',
+    // auth("user", "admin"),
+    TripControllers.getTrip);
 
-router.post('/:tripId/request', auth("admin"), TripControllers.sendRequest);
+router.post('/:tripId/request',
+    auth("user", "admin"),
+    TripControllers.sendRequest);
 
 export { router as tripRoutes, router as tripsRoutes };
 

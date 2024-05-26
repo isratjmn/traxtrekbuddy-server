@@ -4,6 +4,7 @@ import APIError from '../../errors/APIError';
 import httpStatus from 'http-status';
 
 const prisma = new PrismaClient();
+
 const getTravelBuddies = async (tripId: string) => {
     try
     {
@@ -17,6 +18,7 @@ const getTravelBuddies = async (tripId: string) => {
         throw new Error('Failed to retrieve potential travel buddies');
     }
 };
+
 
 const respondToTravelBuddy = async (buddyId: string, tripId: string, status: string) => {
     try
