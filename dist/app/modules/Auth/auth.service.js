@@ -27,10 +27,10 @@ const createUser = (data) => __awaiter(void 0, void 0, void 0, function* () {
         },
     });
     if (existingUser) {
-        throw new APIError_1.default(http_status_1.default.BAD_REQUEST, 'Email Already Exists!!!');
+        throw new APIError_1.default(http_status_1.default.BAD_REQUEST, "Email Already Exists!!!");
     }
     if (data.password !== data.confirmPassword) {
-        throw new APIError_1.default(http_status_1.default.BAD_REQUEST, 'Passwords do not match!!!');
+        throw new APIError_1.default(http_status_1.default.BAD_REQUEST, "Passwords do not match!!!");
     }
     const hashedPassword = yield bcrypt_1.default.hash(data.password, 12);
     const userData = {
@@ -45,13 +45,13 @@ const createUser = (data) => __awaiter(void 0, void 0, void 0, function* () {
             data: userData,
         });
         console.log(userData);
-        if (data.role === 'admin') {
+        if (data.role === "admin") {
             yield transactionClient.admin.create({
                 data: {
                     name: data === null || data === void 0 ? void 0 : data.name,
                     email: data === null || data === void 0 ? void 0 : data.email,
                     password: hashedPassword,
-                }
+                },
             });
         }
         yield transactionClient.userProfile.create({
@@ -79,11 +79,11 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         },
     });
     if (!userData) {
-        throw new APIError_1.default(http_status_1.default.NOT_FOUND, 'User not found !!');
+        throw new APIError_1.default(http_status_1.default.NOT_FOUND, "User not found !!");
     }
     const passwordMatch = yield bcrypt_1.default.compare(payload.password, userData.password);
     if (!passwordMatch) {
-        throw new Error('Incorrect Password !!');
+        throw new Error("Incorrect Password !!");
     }
     const token = jwtUtils_1.jwtUtils.generateToken({
         id: userData.id,
@@ -101,7 +101,7 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
 });
 const changePassword = (user_1, _e) => __awaiter(void 0, [user_1, _e], void 0, function* (user, { currentPassword, newPassword, confirmPassword }) {
     if (newPassword !== confirmPassword) {
-        throw new Error('New password and confirm password do not match');
+        throw new Error("New password and confirm password do not match");
     }
     const userData = yield prisma.user.findUniqueOrThrow({
         where: {
@@ -110,7 +110,7 @@ const changePassword = (user_1, _e) => __awaiter(void 0, [user_1, _e], void 0, f
         },
     });
     if (!userData) {
-        throw new Error('User not found');
+        throw new Error("User not found");
     }
     const isCorrectPassword = yield bcrypt_1.default.compare(currentPassword, userData.password);
     if (!isCorrectPassword) {
@@ -132,5 +132,5 @@ const changePassword = (user_1, _e) => __awaiter(void 0, [user_1, _e], void 0, f
 exports.AuthServices = {
     createUser,
     loginUser,
-    changePassword
+    changePassword,
 };

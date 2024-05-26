@@ -22,14 +22,13 @@ const getUserProfile = (0, asyncHandler_1.default)((req, res) => __awaiter(void 
     return (0, ConsignResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: 'User profile retrieved successfully..!!',
+        message: "User profile retrieved successfully..!!",
         data: userProfile,
     });
 }));
 const getMyProfile = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
-    console.log("USERIDDDDDD", userId);
     const result = yield profile_service_1.UserProfileServices.getMyProfile(userId);
     return res.status(http_status_1.default.OK).json({
         success: true,
@@ -41,18 +40,24 @@ const getMyProfile = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0,
 const updateProfile = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _b;
     const userId = (_b = req.user) === null || _b === void 0 ? void 0 : _b.id;
-    const { name, email } = req.body;
-    const updatedProfile = yield profile_service_1.UserProfileServices.
-        updateUserProfile(userId, { name, email });
+    const payload = req.body;
+    if (!userId) {
+        return res.status(http_status_1.default.UNAUTHORIZED).json({
+            success: false,
+            statusCode: http_status_1.default.UNAUTHORIZED,
+            message: "User ID not found",
+        });
+    }
+    const updatedProfile = yield profile_service_1.UserProfileServices.updateUserProfile(userId, payload);
     return res.status(http_status_1.default.OK).json({
         success: true,
         statusCode: http_status_1.default.OK,
-        message: 'User profile updated successfully',
+        message: "User profile updated successfully",
         data: updatedProfile,
     });
 }));
 exports.UserProfileControllers = {
     getUserProfile,
     getMyProfile,
-    updateProfile
+    updateProfile,
 };

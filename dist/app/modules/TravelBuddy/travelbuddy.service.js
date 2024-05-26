@@ -19,42 +19,76 @@ const APIError_1 = __importDefault(require("../../errors/APIError"));
 const http_status_1 = __importDefault(require("http-status"));
 const prisma = new client_1.PrismaClient();
 const getTravelBuddies = (tripId) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const potentialBuddies = yield prisma.travelBuddyRequest.findMany({
-            where: { tripId },
-            include: { user: true },
-        });
-        return potentialBuddies;
-    }
-    catch (error) {
-        throw new Error('Failed to retrieve potential travel buddies');
-    }
+    const travelBuddies = yield prisma.travelBuddyRequest.findMany({
+        where: {
+            tripId,
+        },
+        include: {
+            user: true,
+        },
+    });
+    // Extract relevant data and return
+    return travelBuddies.map(({ id, tripId, userId, status, createdAt, updatedAt, user }) => ({
+        id,
+        tripId,
+        userId,
+        status,
+        createdAt,
+        updatedAt,
+        user: {
+            name: user.name,
+            email: user.email,
+        },
+    }));
 });
-const respondToTravelBuddy = (buddyId, tripId, status) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        // Check if the travel buddy request exists
-        const buddyRequest = yield prisma.travelBuddyRequest.findUnique({
-            where: {
-                id: buddyId,
-            },
-        });
-        if (!buddyRequest) {
-            throw new APIError_1.default(http_status_1.default.NOT_FOUND, 'Travel buddy request not found');
-        }
-        const updatedRequest = yield prisma.travelBuddyRequest.update({
-            where: {
-                id: buddyId,
-            },
-            data: {
-                status,
-            },
-        });
-        return updatedRequest;
+const getTravelRequestHistory = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const requests = yield prisma.travelBuddyRequest.findMany({
+        where: {
+            userId: userId,
+        },
+        include: {
+            trip: true,
+        },
+    });
+    return requests.map((request) => ({
+        trip: {
+            destination: request.trip.destination,
+        },
+        status: request.status,
+    }));
+});
+const respondToTravelBuddy = (buddyId, payload, userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const buddyRequest = yield prisma.travelBuddyRequest.findUnique({
+        where: {
+            id: buddyId,
+        },
+    });
+    if (!buddyRequest) {
+        throw new APIError_1.default(http_status_1.default.NOT_FOUND, "Travel buddy request not found");
     }
-    catch (error) {
-        throw new APIError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, 'Failed to respond to travel buddy request');
-    }
+    const updatedRequest = yield prisma.travelBuddyRequest.update({
+        where: {
+            id: buddyId,
+        },
+        data: {
+            status: payload.status,
+            updatedAt: new Date(),
+        },
+        include: {
+            trip: true,
+        },
+    });
+    return {
+        id: updatedRequest.id,
+        tripId: updatedRequest.tripId,
+        userId: updatedRequest.userId,
+        status: updatedRequest.status,
+        createdAt: updatedRequest.createdAt,
+        updatedAt: updatedRequest.updatedAt,
+    };
 });
 exports.TravelBuddyServices = {
-    getTravelBuddies, respondToTravelBuddy
+    getTravelBuddies,
+    getTravelRequestHistory,
+    respondToTravelBuddy,
 };

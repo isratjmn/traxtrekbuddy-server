@@ -13,6 +13,7 @@ model User {
   email         String               @unique
   password      String
   role          Role?                @default(user)
+  status        UserStatus           @default(ACTIVE)
   createdAt     DateTime             @default(now())
   updatedAt     DateTime             @updatedAt
   userProfile   UserProfile?
@@ -67,7 +68,7 @@ model TravelBuddyRequest {
   updatedAt DateTime          @updatedAt
   trip      Trip              @relation(fields: [tripId], references: [id])
   user      User              @relation(fields: [userId], references: [id])
-  Admin     Admin?            @relation(fields: [adminId], references: [id])
+  admin     Admin?            @relation(fields: [adminId], references: [id])
   adminId   String?
 
   @@map("travelbuddy")
@@ -95,4 +96,9 @@ enum TravelBuddyStatus {
 enum Role {
   admin
   user
+}
+
+enum UserStatus {
+  ACTIVE
+  DEACTIVE
 }

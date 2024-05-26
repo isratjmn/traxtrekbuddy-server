@@ -20,10 +20,10 @@ const getUserProfile = () => __awaiter(void 0, void 0, void 0, function* () {
             email: true,
             createdAt: true,
             updatedAt: true,
-        }
+        },
     });
     if (!userDetails) {
-        throw new Error('User profile not found....!!');
+        throw new Error("User profile not found....!!");
     }
     return userDetails;
 });
@@ -39,15 +39,20 @@ const getMyProfile = (userId) => __awaiter(void 0, void 0, void 0, function* () 
                 select: {
                     bio: true,
                     age: true,
-                }
+                },
             },
             trips: true,
             buddyRequests: {
-                include: {
-                    trip: true,
-                }
-            }
-        }
+                select: {
+                    status: true,
+                    trip: {
+                        select: {
+                            destination: true,
+                        },
+                    },
+                },
+            },
+        },
     });
     return userProfile;
 });
@@ -56,14 +61,19 @@ const updateUserProfile = (userId, data) => __awaiter(void 0, void 0, void 0, fu
         where: {
             id: userId,
         },
-        data: {
-            name: data.name,
-            email: data.email,
-        },
+        data: Object.assign(Object.assign({}, data), { userProfile: {
+                update: Object.assign({}, data.userProfile),
+            } }),
         select: {
             id: true,
             name: true,
             email: true,
+            userProfile: {
+                select: {
+                    bio: true,
+                    age: true,
+                },
+            },
             createdAt: true,
             updatedAt: true,
         },
@@ -73,5 +83,5 @@ const updateUserProfile = (userId, data) => __awaiter(void 0, void 0, void 0, fu
 exports.UserProfileServices = {
     getUserProfile,
     getMyProfile,
-    updateUserProfile
+    updateUserProfile,
 };

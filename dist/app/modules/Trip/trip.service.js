@@ -16,9 +16,11 @@ exports.TripServices = void 0;
 const client_1 = require("@prisma/client");
 const http_status_1 = __importDefault(require("http-status"));
 const validateQueryParams_1 = __importDefault(require("../../../Utils/validateQueryParams"));
+const date_fns_1 = require("date-fns");
+const APIError_1 = __importDefault(require("../../errors/APIError"));
 const prisma = new client_1.PrismaClient();
 const createTrip = (tripData) => __awaiter(void 0, void 0, void 0, function* () {
-    const defaultImage = 'https://res.cloudinary.com/dmr810p4l/image/upload/v1716664486/img_akl3jv.webp';
+    const defaultImage = "https://res.cloudinary.com/dmr810p4l/image/upload/v1716664486/img_akl3jv.webp";
     const data = {
         destination: tripData.destination,
         description: tripData.description,
@@ -74,9 +76,11 @@ const getTrips = (queryParams) => __awaiter(void 0, void 0, void 0, function* ()
     const [trips, totalCount] = yield Promise.all([
         prisma.trip.findMany({
             where,
-            orderBy: sortBy ? {
-                [sortBy]: sortOrder || 'desc'
-            } : { location: 'desc' },
+            orderBy: sortBy
+                ? {
+                    [sortBy]: sortOrder || "desc",
+                }
+                : { location: "desc" },
             take: limitNumber,
             skip: (pageNumber - 1) * limitNumber,
         }),
@@ -85,7 +89,7 @@ const getTrips = (queryParams) => __awaiter(void 0, void 0, void 0, function* ()
     return {
         success: true,
         statusCode: http_status_1.default.OK,
-        message: 'Trips retrieved successfully....!!',
+        message: "Trips retrieved successfully....!!",
         meta: {
             page: pageNumber,
             limit: limitNumber,
@@ -105,28 +109,84 @@ const getTripById = (tripId) => __awaiter(void 0, void 0, void 0, function* () {
         return trip;
     }
     catch (error) {
-        console.error('Error fetching trip details:', error);
+        console.error("Error fetching trip details:", error);
         throw error;
     }
 });
 const sendTravelBuddyRequest = (tripId, userId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        // Check if the trip exists
+        const trip = yield prisma.trip.findUnique({
+            where: { id: tripId },
+        });
+        if (!trip) {
+            throw new APIError_1.default(http_status_1.default.NOT_FOUND, "Trip not found");
+        }
         const request = yield prisma.travelBuddyRequest.create({
             data: {
                 tripId,
                 userId,
-                status: 'PENDING',
+                status: "PENDING",
             },
         });
         return request;
     }
     catch (error) {
-        throw new Error('Failed to send travel buddy request');
+        throw new Error("Failed to send travel buddy request");
     }
+});
+/* const deleteTrip = async (id: string) => {
+    await prisma.trip.findUniqueOrThrow({
+        where: {
+            id,
+        },
+    });
+    const result = await prisma.trip.delete({
+        where: {
+            id,
+        },
+    });
+    return result;
+};
+ */
+const deleteTrip = (tripId) => __awaiter(void 0, void 0, void 0, function* () {
+    // Delete related TravelBuddy records first
+    yield prisma.travelBuddyRequest.deleteMany({
+        where: {
+            tripId: tripId,
+        },
+    });
+    // Now delete the Trip record
+    const result = yield prisma.trip.delete({
+        where: {
+            id: tripId,
+        },
+    });
+    return result;
+});
+const updateTrip = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    if (payload.startDate) {
+        payload.startDate = (0, date_fns_1.format)((0, date_fns_1.parseISO)(payload.startDate), "yyyy-MM-dd'T'HH:mm:ss'Z'");
+    }
+    if (payload.endDate) {
+        payload.endDate = (0, date_fns_1.format)((0, date_fns_1.parseISO)(payload.endDate), "yyyy-MM-dd'T'HH:mm:ss'Z'");
+    }
+    yield prisma.trip.findUniqueOrThrow({
+        where: {
+            id,
+        },
+    });
+    const result = yield prisma.trip.update({
+        where: { id },
+        data: Object.assign({}, payload),
+    });
+    return result;
 });
 exports.TripServices = {
     createTrip,
     getTrips,
     getTripById,
-    sendTravelBuddyRequest
+    sendTravelBuddyRequest,
+    deleteTrip,
+    updateTrip,
 };

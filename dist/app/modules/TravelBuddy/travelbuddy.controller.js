@@ -18,27 +18,56 @@ const ConsignResponse_1 = __importDefault(require("../../../mutual/ConsignRespon
 const travelbuddy_service_1 = require("./travelbuddy.service");
 const asyncHandler_1 = __importDefault(require("../../../mutual/asyncHandler"));
 const getPotentialTravelBuddies = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = req.user;
     const { tripId } = req.params;
-    console.log("--------tripId--------------", tripId);
     const potentialBuddies = yield travelbuddy_service_1.TravelBuddyServices.getTravelBuddies(tripId);
     return (0, ConsignResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: 'Potential travel buddies retrieved successfully...!!',
+        message: "My travel buddies retrieved successfully...!!",
         data: potentialBuddies,
     });
 }));
+const getTravelRequestHistory = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { userId } = req.user;
+        const travelRequests = yield travelbuddy_service_1.TravelBuddyServices.getTravelRequestHistory(userId);
+        res.status(200).json({
+            success: true,
+            data: travelRequests,
+        });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: "Server error",
+        });
+    }
+});
 const respondToRequest = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const { buddyId } = req.params;
     const { tripId, status } = req.body;
-    const response = yield travelbuddy_service_1.TravelBuddyServices.respondToTravelBuddy(buddyId, tripId, status);
+    const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+    console.log("🚀 ~ respondToRequest ~ buddyId:", buddyId);
+    const response = yield travelbuddy_service_1.TravelBuddyServices.respondToTravelBuddy(buddyId, { tripId, status }, userId);
+    if (!response) {
+        res.status(404).json({
+            success: false,
+            message: "Travel buddy request not found.",
+        });
+        return;
+    }
     (0, ConsignResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: 'Travel buddy request responded successfully',
+        message: "Travel buddy request respond updated successfully.....!!",
         data: response,
     });
 }));
 exports.TravelBuddyControllers = {
-    getPotentialTravelBuddies, respondToRequest
+    getPotentialTravelBuddies,
+    getTravelRequestHistory,
+    respondToRequest,
 };

@@ -25,8 +25,8 @@ const auth = (...roles) => {
             if (!token) {
                 return res.status(401).json({
                     success: false,
-                    message: 'Access denied. No token provided...!!',
-                    errorDetails: 'Token not found..!!',
+                    message: "Access denied. No token provided...!!",
+                    errorDetails: "Token not found..!!",
                 });
             }
             const verifiedUser = jwtUtils_1.jwtUtils.verifyToken(token, config_1.default.jwt.jwt_secret);
@@ -47,11 +47,8 @@ const auth = (...roles) => {
                 next();
             }
             else {
-                throw new APIError_1.default(http_status_1.default.FORBIDDEN, 'Forbuidden !!!');
+                throw new APIError_1.default(http_status_1.default.FORBIDDEN, "Forbuidden !!!");
             }
-            /* req.user = verifiedUser;
-            console.log({ verifiedUser });
-            next(); */
         }
         catch (err) {
             next(err);

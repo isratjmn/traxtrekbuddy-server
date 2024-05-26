@@ -8,9 +8,9 @@ const express_1 = __importDefault(require("express"));
 const auth_controller_1 = require("./auth.controller");
 const auth_1 = __importDefault(require("../../middlewares/auth"));
 const router = express_1.default.Router();
-router.post('/register', 
+router.post("/register", 
 // requestValidate(AuthValidation.registerSchema),
 auth_controller_1.AuthControllers.registerUser);
-router.post('/login', auth_controller_1.AuthControllers.login);
+router.post("/login", auth_controller_1.AuthControllers.login);
 router.post("/change-password", (0, auth_1.default)("admin"), auth_controller_1.AuthControllers.changePassword);
 exports.authRoutes = router;
