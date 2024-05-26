@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Secret } from 'jsonwebtoken';
 import httpStatus from 'http-status';
-import APIError from './APIError';
+import APIError from '../errors/APIError';
 import config from '../../config';
 import { jwtUtils } from '../../Utils/jwtUtils';
 import { PrismaClient } from "@prisma/client";

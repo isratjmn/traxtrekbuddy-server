@@ -3,11 +3,12 @@ import httpStatus from 'http-status';
 import ConsignResponse from '../../../mutual/ConsignResponse';
 import { TripServices } from './trip.service';
 import asyncHandler from '../../../mutual/asyncHandler';
+import { IUploadFile } from '../../../interfaces/file';
+import { UploadFileHelper } from '../../../mutual/UploaderFileHelper';
 
 //* CREATE TRIP
 const createTrip = asyncHandler(async (req: Request, res: Response) => {
     const id = req?.user?.id;
-    console.log(req);
     if (!id)
     {
         res.status(401).json({
@@ -16,14 +17,20 @@ const createTrip = asyncHandler(async (req: Request, res: Response) => {
         });
         return;
     }
+    const file = req.file as IUploadFile;
+    console.log(file);
+    if (file)
+    {
+        const uploadedProfileImage = await UploadFileHelper.uploadToCloudinary(file);
+        console.log(req.body);
+        req.body.photos = uploadedProfileImage?.secure_url;
+    }
     const tripData = {
         ...req.body,
         userId: id,
-
     };
-    console.log(tripData);
-    const newTrip = await TripServices.createTrip(tripData);
 
+    const newTrip = await TripServices.createTrip(tripData);
     ConsignResponse(res, {
         success: true,
         statusCode: 201,

@@ -21,6 +21,34 @@ const getUserProfile = async () => {
     return userDetails;
 };
 
+const getMyProfile = async (userId: string) => {
+    const userProfile = await prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            userProfile: {
+                select: {
+                    bio: true,
+                    age: true,
+                }
+            },
+            trips: true,
+            buddyRequests: {
+                include: {
+                    trip: true,
+                }
+            }
+        }
+    });
+
+    return userProfile;
+};
+
+
+
 const updateUserProfile = async (
     userId: string,
     data: {
@@ -46,5 +74,7 @@ const updateUserProfile = async (
 };
 
 export const UserProfileServices = {
-    getUserProfile, updateUserProfile
+    getUserProfile,
+    getMyProfile,
+    updateUserProfile
 };

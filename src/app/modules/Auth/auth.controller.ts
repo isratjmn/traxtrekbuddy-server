@@ -23,6 +23,7 @@ const registerUser = asyncHandler(
                 email: result.email,
                 role: result.role,
 
+
             }
         });
     }

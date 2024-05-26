@@ -5,21 +5,25 @@ import { TripData } from "./trip.interface";
 
 const prisma = new PrismaClient();
 
-
 const createTrip = async (tripData: TripData): Promise<Trip> => {
-    console.log("Trip Data", tripData);
+    const defaultImage = 'https://res.cloudinary.com/dmr810p4l/image/upload/v1716664486/img_akl3jv.webp';
+    const data: any = {
+        destination: tripData.destination,
+        description: tripData.description,
+        startDate: new Date(tripData.startDate).toISOString(),
+        endDate: new Date(tripData.endDate).toISOString(),
+        travelType: tripData.travelType,
+        photos: tripData.photos || defaultImage,
+        itinerary: tripData.itinerary,
+        location: tripData.location,
+    };
+    if (tripData.userId)
+    {
+        data.userId = tripData.userId;
+    }
+
     const trip = await prisma.trip.create({
-        data: {
-            userId: tripData?.userId,
-            destination: tripData?.destination,
-            description: tripData?.description,
-            startDate: new Date(tripData.startDate).toISOString(),
-            endDate: new Date(tripData.endDate).toISOString(),
-            travelType: tripData?.travelType,
-            photos: tripData?.photos || null,
-            itinerary: tripData?.itinerary,
-            location: tripData?.location
-        },
+        data,
     });
     return trip;
 };

@@ -27,6 +27,30 @@ const getUserProfile = () => __awaiter(void 0, void 0, void 0, function* () {
     }
     return userDetails;
 });
+const getMyProfile = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const userProfile = yield prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            userProfile: {
+                select: {
+                    bio: true,
+                    age: true,
+                }
+            },
+            trips: true,
+            buddyRequests: {
+                include: {
+                    trip: true,
+                }
+            }
+        }
+    });
+    return userProfile;
+});
 const updateUserProfile = (userId, data) => __awaiter(void 0, void 0, void 0, function* () {
     const updatedProfile = yield prisma.user.update({
         where: {
@@ -47,5 +71,7 @@ const updateUserProfile = (userId, data) => __awaiter(void 0, void 0, void 0, fu
     return updatedProfile;
 });
 exports.UserProfileServices = {
-    getUserProfile, updateUserProfile
+    getUserProfile,
+    getMyProfile,
+    updateUserProfile
 };

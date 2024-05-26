@@ -16,11 +16,21 @@ const getUserProfile = asyncHandler(
     }
 );
 
+const getMyProfile = asyncHandler(async (req: Request & { user?: any; }, res: Response) => {
+    const userId = req.user?.id;
+    console.log("USERIDDDDDD", userId);
+    const result = await UserProfileServices.getMyProfile(userId as string);
+    return res.status(httpStatus.OK).json({
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "My Profile retrieved successfully.....!!",
+        data: result,
+    });
+});
+
 
 const updateProfile = asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user?.id;
-
-    console.log("USER", userId);
     const { name, email } = req.body;
 
     const updatedProfile = await UserProfileServices.
@@ -37,5 +47,7 @@ const updateProfile = asyncHandler(async (req: Request, res: Response) => {
 
 
 export const UserProfileControllers = {
-    getUserProfile, updateProfile
+    getUserProfile,
+    getMyProfile,
+    updateProfile
 };

@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import jwt, { Secret } from 'jsonwebtoken';
-import APIError from '../../middlewares/APIError';
+import APIError from '../../errors/APIError';
 import httpStatus from 'http-status';
 import { jwtUtils } from '../../../Utils/jwtUtils';
 import config from '../../../config';
@@ -12,12 +12,10 @@ const prisma = new PrismaClient();
 const createUser = async (data: TUser) => {
     const existingUser = await prisma.user.findUnique({
         where: {
-            
+
             email: data.email,
         },
     });
-
-
     if (existingUser)
     {
         throw new APIError(httpStatus.BAD_REQUEST, 'Email Already Exists!!!');
@@ -41,9 +39,7 @@ const createUser = async (data: TUser) => {
     const newUser = await prisma.$transaction(async (transactionClient) => {
         const createdUser = await transactionClient.user.create({
             data: userData,
-            include: {
-                userProfile: true
-            }
+
         });
         console.log(userData);
 
@@ -58,6 +54,14 @@ const createUser = async (data: TUser) => {
                 }
             });
         }
+
+        await transactionClient.userProfile.create({
+            data: {
+                userId: createdUser.id,
+                bio: data.userProfile?.bio ?? "Hi, I'm a travel buddy looking for exciting adventures!",
+                age: data.userProfile?.age ?? 25,
+            },
+        });
         // Generate the token but do not return it
         const token = jwtUtils.generateToken({
             email: userData.email,
@@ -68,7 +72,6 @@ const createUser = async (data: TUser) => {
             config.jwt.jwt_secret as Secret,
             config.jwt.expires_in as string
         );
-        console.log("------------", token);
         return createdUser;
     });
 

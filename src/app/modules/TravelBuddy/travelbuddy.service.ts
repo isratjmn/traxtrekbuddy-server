@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { PrismaClient } from '@prisma/client';
-import APIError from '../../middlewares/APIError';
+import APIError from '../../errors/APIError';
 import httpStatus from 'http-status';
 
 const prisma = new PrismaClient();
@@ -38,7 +38,7 @@ const respondToTravelBuddy = async (buddyId: string, tripId: string, status: str
             },
             data: {
                 status,
-                
+
             },
         });
 

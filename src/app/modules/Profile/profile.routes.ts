@@ -7,9 +7,9 @@ import { UserProfileValidation } from './profile.validation';
 const router = express.Router();
 
 router.get('/', auth("user"), UserProfileControllers.getUserProfile);
-router.put('/',
-    auth("user"),
-    requestvalidate(UserProfileValidation.UpdateProfileSchema),
-    UserProfileControllers.updateProfile);
+
+router.get('/my-profile', auth("user", "admin"), UserProfileControllers.getMyProfile);
+
+router.put('/', auth("user"), requestvalidate(UserProfileValidation.UpdateProfileSchema), UserProfileControllers.updateProfile);
 
 export const profileRoutes = router;

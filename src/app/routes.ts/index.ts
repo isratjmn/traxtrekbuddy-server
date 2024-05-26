@@ -33,6 +33,7 @@ const moduleRoutes = [
         route: profileRoutes
     },
 
+
 ];
 
 moduleRoutes.forEach(route => router.use(route.path, route.route));

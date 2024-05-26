@@ -26,10 +26,21 @@ const getUserProfile = (0, asyncHandler_1.default)((req, res) => __awaiter(void 
         data: userProfile,
     });
 }));
-const updateProfile = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getMyProfile = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
-    console.log("USER", userId);
+    console.log("USERIDDDDDD", userId);
+    const result = yield profile_service_1.UserProfileServices.getMyProfile(userId);
+    return res.status(http_status_1.default.OK).json({
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: "My Profile retrieved successfully.....!!",
+        data: result,
+    });
+}));
+const updateProfile = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _b;
+    const userId = (_b = req.user) === null || _b === void 0 ? void 0 : _b.id;
     const { name, email } = req.body;
     const updatedProfile = yield profile_service_1.UserProfileServices.
         updateUserProfile(userId, { name, email });
@@ -41,5 +52,7 @@ const updateProfile = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0
     });
 }));
 exports.UserProfileControllers = {
-    getUserProfile, updateProfile
+    getUserProfile,
+    getMyProfile,
+    updateProfile
 };
