@@ -11,23 +11,25 @@ const errorHandler_1 = require("./app/middlewares/errorHandler");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({
-    origin: ['https://traxtrek-client.vercel.app/', 'http://localhost:3001'],
+    origin: ["https://traxtrek-client.vercel.app", "http://localhost:3000"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
 }));
 app.use((0, cookie_parser_1.default)());
 // Parser
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({
-    extended: true
+    extended: true,
 }));
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
     res.send(`
         <div style="font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 20px; text-align: center; padding-top: 20px; color: #4b0082;">
             <p>TrekTrax Travel Buddy Server Running.....!!</p>
         </div>
     `);
 });
-app.use('/api', routes_ts_1.default);
+app.use("/api", routes_ts_1.default);
 // Register error handling middleware
 app.use(errorHandler_1.genericErrorHandler);
 app.use(errorHandler_1.unauthorizedErrorHandler);
