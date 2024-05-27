@@ -17,12 +17,7 @@ router.patch(
 	userController.updateUserInfo
 );
 
-router.patch(
-	"/:id/role",
-	auth(Role.admin),
-	// requestValidate(userValidation.userRoleUpdateValidation),
-	userController.updateUserRole
-);
+router.patch("/:id/role", auth(Role.admin), userController.updateUserRole);
 
 router.get(
 	"/dashboard-data",

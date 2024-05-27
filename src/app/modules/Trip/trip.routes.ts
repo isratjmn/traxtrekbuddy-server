@@ -15,7 +15,6 @@ router.post(
 		req.body = TripsValidation.CreateTripSchema.parse(
 			JSON.parse(req.body.data)
 		);
-
 		return TripControllers.createTrip(req, res, next);
 	}
 );
@@ -30,7 +29,7 @@ router.delete("/:id", auth(Role.user, Role.admin), TripControllers.deleteTrip);
 
 router.patch(
 	"/:id",
-	// auth(Role.user, Role.admin),
+	auth(Role.user, Role.admin),
 	TripControllers.updateTrip
 );
 

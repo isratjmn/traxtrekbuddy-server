@@ -21,6 +21,7 @@ const jwtUtils_1 = require("../../../Utils/jwtUtils");
 const config_1 = __importDefault(require("../../../config"));
 const prisma = new client_1.PrismaClient();
 const createUser = (data) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c, _d, _e, _f;
     const existingUser = yield prisma.user.findUnique({
         where: {
             email: data.email,
@@ -40,7 +41,7 @@ const createUser = (data) => __awaiter(void 0, void 0, void 0, function* () {
         role: data.role,
     };
     const newUser = yield prisma.$transaction((transactionClient) => __awaiter(void 0, void 0, void 0, function* () {
-        var _a, _b, _c, _d;
+        var _g, _h, _j, _k, _l, _m;
         const createdUser = yield transactionClient.user.create({
             data: userData,
         });
@@ -56,19 +57,24 @@ const createUser = (data) => __awaiter(void 0, void 0, void 0, function* () {
         yield transactionClient.userProfile.create({
             data: {
                 userId: createdUser.id,
-                bio: (_b = (_a = data.userProfile) === null || _a === void 0 ? void 0 : _a.bio) !== null && _b !== void 0 ? _b : "Hi, I'm a travel buddy looking for exciting adventures!",
-                age: (_d = (_c = data.userProfile) === null || _c === void 0 ? void 0 : _c.age) !== null && _d !== void 0 ? _d : 25,
+                bio: (_h = (_g = data.userProfile) === null || _g === void 0 ? void 0 : _g.bio) !== null && _h !== void 0 ? _h : "Hi, I'm a travel buddy looking for exciting adventures!",
+                profileImage: (_k = (_j = data.userProfile) === null || _j === void 0 ? void 0 : _j.profileImage) !== null && _k !== void 0 ? _k : "https://res.cloudinary.com/dmr810p4l/image/upload/v1717297396/2150771125_osnw4b.jpg",
+                age: (_m = (_l = data.userProfile) === null || _l === void 0 ? void 0 : _l.age) !== null && _m !== void 0 ? _m : 25,
             },
         });
         // Generate the token but do not return it
-        const token = jwtUtils_1.jwtUtils.generateToken({
+        jwtUtils_1.jwtUtils.generateToken({
             email: userData.email,
             name: userData.name,
             role: userData.role,
         }, config_1.default.jwt.jwt_secret, config_1.default.jwt.expires_in);
         return createdUser;
     }));
-    return newUser;
+    return Object.assign(Object.assign({}, newUser), { userProfile: {
+            profileImage: (_b = (_a = data.userProfile) === null || _a === void 0 ? void 0 : _a.profileImage) !== null && _b !== void 0 ? _b : "https://res.cloudinary.com/dmr810p4l/image/upload/v1717297396/2150771125_osnw4b.jpg",
+            bio: (_d = (_c = data.userProfile) === null || _c === void 0 ? void 0 : _c.bio) !== null && _d !== void 0 ? _d : "Hi, I'm a travel buddy looking for exciting adventures!",
+            age: (_f = (_e = data.userProfile) === null || _e === void 0 ? void 0 : _e.age) !== null && _f !== void 0 ? _f : 25,
+        } });
 });
 const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const userData = yield prisma.user.findUniqueOrThrow({
@@ -98,7 +104,7 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         token,
     };
 });
-const changePassword = (user_1, _e) => __awaiter(void 0, [user_1, _e], void 0, function* (user, { currentPassword, newPassword, confirmPassword }) {
+const changePassword = (user_1, _o) => __awaiter(void 0, [user_1, _o], void 0, function* (user, { currentPassword, newPassword, confirmPassword }) {
     if (newPassword !== confirmPassword) {
         throw new Error("New password and confirm password do not match");
     }

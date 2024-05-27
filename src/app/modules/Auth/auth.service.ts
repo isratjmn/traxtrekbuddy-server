@@ -18,25 +18,20 @@ const createUser = async (data: TUser) => {
 	if (existingUser) {
 		throw new APIError(httpStatus.BAD_REQUEST, "Email Already Exists!!!");
 	}
-
 	if (data.password !== data.confirmPassword) {
 		throw new APIError(httpStatus.BAD_REQUEST, "Passwords do not match!!!");
 	}
-
 	const hashedPassword: string = await bcrypt.hash(data.password, 12);
-
 	const userData = {
 		name: data.name,
 		email: data.email,
 		password: hashedPassword,
 		role: data.role,
 	};
-
 	const newUser = await prisma.$transaction(async (transactionClient) => {
 		const createdUser = await transactionClient.user.create({
 			data: userData,
 		});
-
 		if (data.role === "admin") {
 			await transactionClient.admin.create({
 				data: {
@@ -53,11 +48,14 @@ const createUser = async (data: TUser) => {
 				bio:
 					data.userProfile?.bio ??
 					"Hi, I'm a travel buddy looking for exciting adventures!",
+				profileImage:
+					data.userProfile?.profileImage ??
+					"https://res.cloudinary.com/dmr810p4l/image/upload/v1717297396/2150771125_osnw4b.jpg",
 				age: data.userProfile?.age ?? 25,
 			},
 		});
 		// Generate the token but do not return it
-		const token = jwtUtils.generateToken(
+		jwtUtils.generateToken(
 			{
 				email: userData.email,
 				name: userData.name,
@@ -69,7 +67,18 @@ const createUser = async (data: TUser) => {
 		return createdUser;
 	});
 
-	return newUser;
+	return {
+		...newUser,
+		userProfile: {
+			profileImage:
+				data.userProfile?.profileImage ??
+				"https://res.cloudinary.com/dmr810p4l/image/upload/v1717297396/2150771125_osnw4b.jpg",
+			bio:
+				data.userProfile?.bio ??
+				"Hi, I'm a travel buddy looking for exciting adventures!",
+			age: data.userProfile?.age ?? 25,
+		},
+	};
 };
 
 const loginUser = async (payload: {
@@ -132,11 +141,9 @@ const changePassword = async (
 			email: user.email,
 		},
 	});
-
 	if (!userData) {
 		throw new Error("User not found");
 	}
-
 	const isCorrectPassword = await bcrypt.compare(
 		currentPassword,
 		userData.password
@@ -144,9 +151,7 @@ const changePassword = async (
 	if (!isCorrectPassword) {
 		throw new APIError(httpStatus.UNAUTHORIZED, "Incorrect password");
 	}
-
 	const hashedPassword = await bcrypt.hash(newPassword, 10);
-
 	await prisma.user.update({
 		where: {
 			email: userData.email,

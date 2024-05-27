@@ -21,6 +21,4 @@ router.get("/", trip_controller_1.TripControllers.getTrips);
 router.get("/:id", (0, auth_1.default)(client_1.Role.user, client_1.Role.admin), trip_controller_1.TripControllers.getTrip);
 router.post("/:tripId/request", (0, auth_1.default)(client_1.Role.user), trip_controller_1.TripControllers.sendRequest);
 router.delete("/:id", (0, auth_1.default)(client_1.Role.user, client_1.Role.admin), trip_controller_1.TripControllers.deleteTrip);
-router.patch("/:id", 
-// auth(Role.user, Role.admin),
-trip_controller_1.TripControllers.updateTrip);
+router.patch("/:id", (0, auth_1.default)(client_1.Role.user, client_1.Role.admin), trip_controller_1.TripControllers.updateTrip);
